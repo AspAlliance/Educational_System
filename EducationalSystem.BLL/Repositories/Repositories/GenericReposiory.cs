@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace EducationalSystem.BLL.Repositories.Repositories
-{//Comment Test Repo
+{
     public class GenericReposiory<T> : IGenericRepository<T> where T : BaseEntity
     {
         private protected readonly Education_System _dbContext;

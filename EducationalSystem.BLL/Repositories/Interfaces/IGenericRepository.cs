@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace EducationalSystem.BLL.Repositories.Interfaces
 {
-    //Comment Test Repo
     public interface IGenericRepository<T> where T : BaseEntity
     {
         Task<IQueryable<T>> GetAll();

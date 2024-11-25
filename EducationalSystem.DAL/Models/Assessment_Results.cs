@@ -5,6 +5,6 @@
         public string UserID { get; set; }
         public int Score { get; set; }
         public DateTime? AttemptDate { get; set; }
-        public ApplicationUser User { get; set; }
+        virtual public ApplicationUser User { get; set; }
     }
 }

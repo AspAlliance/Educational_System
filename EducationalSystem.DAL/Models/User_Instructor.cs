@@ -5,7 +5,7 @@
         public string UserId { get; set; } // ForeignKey with ApplicationUser
         public int InstructorId { get; set; } // ForeignKey with Instructors
 
-        public Instructors Instructors { get; set; }
-        public ApplicationUser User { get; set; }
+        virtual public Instructors Instructors { get; set; }
+        virtual public ApplicationUser User { get; set; }
     }
 }

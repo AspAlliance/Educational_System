@@ -7,7 +7,7 @@
         public DateTime CompletionDate { get; set; }  // Completion date of the lesson
 
         // Navigation properties
-        public Lessons Lessons { get; set; }  // Navigation property for Lessons
-        public ApplicationUser ApplicationUser { get; set; }  // Navigation property for ApplicationUser
+        virtual public Lessons Lessons { get; set; }  // Navigation property for Lessons
+        virtual public ApplicationUser ApplicationUser { get; set; }  // Navigation property for ApplicationUser
     }
 }

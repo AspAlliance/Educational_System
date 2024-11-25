@@ -8,7 +8,7 @@
         public DateTime CompletedDate { get; set; }
 
         // Navigation properties
-        public ApplicationUser User { get; set; }
-        public Courses Courses { get; set; }
+        virtual public ApplicationUser User { get; set; }
+        virtual public Courses Courses { get; set; }
     }
 }

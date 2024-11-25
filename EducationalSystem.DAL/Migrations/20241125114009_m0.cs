@@ -257,16 +257,24 @@ namespace EducationalSystem.DAL.Migrations
                     CV_PDF_URL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NationalCardImageURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BIO = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    SpecializationsID = table.Column<int>(type: "int", nullable: true)
+                    SpecializationsID = table.Column<int>(type: "int", nullable: true),
+                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Instructors", x => x.ID);
                     table.ForeignKey(
+                        name: "FK_Instructors_AspNetUsers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Instructors_Specializations_SpecializationsID",
                         column: x => x.SpecializationsID,
                         principalTable: "Specializations",
-                        principalColumn: "ID");
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -698,6 +706,12 @@ namespace EducationalSystem.DAL.Migrations
                 column: "SpecializationsID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Instructors_UserID",
+                table: "Instructors",
+                column: "UserID",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Lesson_Completions_ApplicationUserId",
                 table: "Lesson_Completions",
                 column: "ApplicationUserId");
@@ -818,9 +832,6 @@ namespace EducationalSystem.DAL.Migrations
                 name: "Questions");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
                 name: "Instructors");
 
             migrationBuilder.DropTable(
@@ -828,6 +839,9 @@ namespace EducationalSystem.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "QuestionTypes");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Specializations");

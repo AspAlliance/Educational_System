@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationalSystem.DAL.Migrations
 {
     [DbContext(typeof(Education_System))]
-    [Migration("20241124183728_m0")]
+    [Migration("20241125114009_m0")]
     partial class m0
     {
         /// <inheritdoc />
@@ -400,9 +400,16 @@ namespace EducationalSystem.DAL.Migrations
                     b.Property<int?>("SpecializationsID")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("ID");
 
                     b.HasIndex("SpecializationsID");
+
+                    b.HasIndex("UserID")
+                        .IsUnique();
 
                     b.ToTable("Instructors");
                 });
@@ -887,9 +894,20 @@ namespace EducationalSystem.DAL.Migrations
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.Instructors", b =>
                 {
-                    b.HasOne("EducationalSystem.DAL.Models.Specializations", null)
+                    b.HasOne("EducationalSystem.DAL.Models.Specializations", "Specializations")
                         .WithMany("Instructors")
-                        .HasForeignKey("SpecializationsID");
+                        .HasForeignKey("SpecializationsID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("EducationalSystem.DAL.Models.ApplicationUser", "applicationUser")
+                        .WithOne("Instructors")
+                        .HasForeignKey("EducationalSystem.DAL.Models.Instructors", "UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Specializations");
+
+                    b.Navigation("applicationUser");
                 });
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.Lesson_Completions", b =>
@@ -1064,6 +1082,9 @@ namespace EducationalSystem.DAL.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("CourseEnrollments");
+
+                    b.Navigation("Instructors")
+                        .IsRequired();
 
                     b.Navigation("Lesson_Completions");
 

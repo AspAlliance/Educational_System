@@ -5,6 +5,6 @@ namespace EducationalSystem.DAL.Models
     public class Categories : BaseEntity
     {
         public string CategoryName { get; set; }
-        public ICollection<Courses> Courses { get; set; }
+        virtual public ICollection<Courses> Courses { get; set; }
     }
 }

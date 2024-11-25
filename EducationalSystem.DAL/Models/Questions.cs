@@ -8,8 +8,8 @@
         public int Points { get; set; }
 
         // Navigation properties
-        public ICollection<Choices> Choices { get; set; }
-        public QuestionType QuestionType { get; set; }
-        public Assessments Assessments { get; set; }
+        virtual public ICollection<Choices> Choices { get; set; }
+        virtual public QuestionType QuestionType { get; set; }
+        virtual public Assessments Assessments { get; set; }
     }
 }

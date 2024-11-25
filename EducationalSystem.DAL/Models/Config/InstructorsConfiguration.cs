@@ -22,6 +22,11 @@ namespace EducationalSystem.DAL.Models.Config
                 .WithOne(c => c.Instructors)  // Each Course has one Instructor
                 .HasForeignKey(c => c.InstructorID)
                 .OnDelete(DeleteBehavior.Cascade);  // Cascade delete behavior if needed
+
+            builder.HasOne(i => i.Specializations)  // An Instructor  have one Specializations
+               .WithMany(c => c.Instructors)  // Each Specializations has many Instructor
+               .HasForeignKey(c => c.SpecializationsID)
+               .OnDelete(DeleteBehavior.SetNull);  // Cascade delete behavior if needed
         }
     }
 }

@@ -266,7 +266,8 @@ namespace EducationalSystem.DAL.Migrations
                         name: "FK_Instructors_Specializations_SpecializationsID",
                         column: x => x.SpecializationsID,
                         principalTable: "Specializations",
-                        principalColumn: "ID");
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(

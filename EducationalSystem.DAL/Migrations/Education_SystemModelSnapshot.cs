@@ -884,9 +884,12 @@ namespace EducationalSystem.DAL.Migrations
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.Instructors", b =>
                 {
-                    b.HasOne("EducationalSystem.DAL.Models.Specializations", null)
+                    b.HasOne("EducationalSystem.DAL.Models.Specializations", "Specializations")
                         .WithMany("Instructors")
-                        .HasForeignKey("SpecializationsID");
+                        .HasForeignKey("SpecializationsID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Specializations");
                 });
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.Lesson_Completions", b =>

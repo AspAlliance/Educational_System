@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationalSystem.DAL.Migrations
 {
     [DbContext(typeof(Education_System))]
-    [Migration("20241124183728_m0")]
+    [Migration("20241125110220_m0")]
     partial class m0
     {
         /// <inheritdoc />
@@ -887,9 +887,12 @@ namespace EducationalSystem.DAL.Migrations
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.Instructors", b =>
                 {
-                    b.HasOne("EducationalSystem.DAL.Models.Specializations", null)
+                    b.HasOne("EducationalSystem.DAL.Models.Specializations", "Specializations")
                         .WithMany("Instructors")
-                        .HasForeignKey("SpecializationsID");
+                        .HasForeignKey("SpecializationsID")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Specializations");
                 });
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.Lesson_Completions", b =>

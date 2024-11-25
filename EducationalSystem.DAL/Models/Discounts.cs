@@ -11,6 +11,6 @@ namespace EducationalSystem.DAL.Models
         public DateTime EndDate { get; set; }
 
         // Navigation property
-        public Courses Courses { get; set; } // Remains as a navigation property
+        virtual public Courses Courses { get; set; } // Remains as a navigation property
     }
 }

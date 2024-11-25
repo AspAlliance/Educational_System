@@ -10,8 +10,8 @@ namespace EducationalSystem.DAL.Models
         public string AssessmentType { get; set; }
         public int MaxScore { get; set; }
         public DateTime CreatedDate { get; set; }
-        public ICollection<Questions> Questions { get; set; }
-        public Courses Courses { get; set; }
-        public Lessons? Lessons { get; set; }
+        virtual public ICollection<Questions> Questions { get; set; }
+        virtual public Courses Courses { get; set; }
+        virtual public Lessons? Lessons { get; set; }
     }
 }

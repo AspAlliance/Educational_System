@@ -9,15 +9,15 @@
         public DateTime? CreatedDate { get; set; }
 
         // Inverse navigation for CurrentLesson
-        public ICollection<Lesson_Prerequisites> CurrentLessonPrerequisites { get; set; }
+        virtual public ICollection<Lesson_Prerequisites> CurrentLessonPrerequisites { get; set; }
 
         // Inverse navigation for PrerequisiteLesson
-        public ICollection<Lesson_Prerequisites> PrerequisiteLessonPrerequisites { get; set; }
-        public ICollection<Assessments>? Assessments { get; set; }
-        public ICollection<Comments> Comments { get; set; }
-        public ICollection<Lesson_Completions> Lesson_Completions { get; set; }
+        virtual public ICollection<Lesson_Prerequisites> PrerequisiteLessonPrerequisites { get; set; }
+        virtual public ICollection<Assessments>? Assessments { get; set; }
+        virtual public ICollection<Comments> Comments { get; set; }
+        virtual public ICollection<Lesson_Completions> Lesson_Completions { get; set; }
 
         // Navigation property for Courses
-        public Courses Courses { get; set; }
+        virtual public Courses Courses { get; set; }
     }
 }

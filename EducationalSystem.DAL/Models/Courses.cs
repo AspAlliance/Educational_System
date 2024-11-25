@@ -10,11 +10,11 @@
         public decimal TotalAmount { get; set; }
 
         // Navigation properties
-        public Categories Categories { get; set; }
-        public Course_Instructors Course_Instructors { get; set; }  // One Instructor per Course
-        public ICollection<Lessons>? Lessons { get; set; }
-        public ICollection<Discounts>? Discounts { get; set; }
-        public ICollection<Assessments>? Assessments { get; set; }
-        public ICollection<Course_Enrollments>? Course_Enrollments { get; set; }
+        virtual public Categories Categories { get; set; }
+        virtual public Course_Instructors Course_Instructors { get; set; }  // One Instructor per Course
+        virtual public ICollection<Lessons>? Lessons { get; set; }
+        virtual public ICollection<Discounts>? Discounts { get; set; }
+        virtual public ICollection<Assessments>? Assessments { get; set; }
+        virtual public ICollection<Course_Enrollments>? Course_Enrollments { get; set; }
     }
 }

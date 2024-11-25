@@ -6,7 +6,7 @@
         public int InstructorID { get; set; } // Foreign key for Instructors
 
         // Navigation properties
-        public Courses Courses { get; set; } // Navigation property for Courses
-        public Instructors Instructors { get; set; } // Navigation property for Instructors
+        virtual public Courses Courses { get; set; } // Navigation property for Courses
+        virtual public Instructors Instructors { get; set; } // Navigation property for Instructors
     }
 }

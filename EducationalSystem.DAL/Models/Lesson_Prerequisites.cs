@@ -6,7 +6,7 @@
         public int PrerequisiteLessonID { get; set; }  // Foreign key for PrerequisiteLesson
 
         // Navigation properties
-        public Lessons CurrentLesson { get; set; }  // Navigation property for CurrentLesson
-        public Lessons PrerequisiteLesson { get; set; }  // Navigation property for PrerequisiteLesson
+        virtual public Lessons CurrentLesson { get; set; }  // Navigation property for CurrentLesson
+        virtual public Lessons PrerequisiteLesson { get; set; }  // Navigation property for PrerequisiteLesson
     }
 }

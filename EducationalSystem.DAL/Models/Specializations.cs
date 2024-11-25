@@ -6,7 +6,7 @@ namespace EducationalSystem.DAL.Models
     {
         public string SpecializationName { get; set; }
         public string Description { get; set; }
-        public ICollection<Instructors> Instructors { get; set; }
+        virtual public ICollection<Instructors> Instructors { get; set; }
 
     }
 }

@@ -6,7 +6,7 @@
         public string UserID { get; set; } // Foreign key for ApplicationUser
         public string CommentText { get; set; }
         public DateTime PostedDate { get; set; }
-        public Lessons Lessons { get; set; } // Navigation property for Lessons
-        public ApplicationUser ApplicationUser { get; set; } // Navigation property for ApplicationUser
+        virtual public Lessons Lessons { get; set; } // Navigation property for Lessons
+        virtual public ApplicationUser ApplicationUser { get; set; } // Navigation property for ApplicationUser
     }
 }

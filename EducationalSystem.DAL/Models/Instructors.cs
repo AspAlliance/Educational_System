@@ -10,9 +10,9 @@
         public string UserID { get; set; }
 
         // Navigation properties
-        public Specializations? Specializations { get; set; }
-        public ApplicationUser? applicationUser { get; set; }
-        public ICollection<User_Instructor>? User_Instructors { get; set; } // Many-to-many relationship via User_Instructor
-        public ICollection<Course_Instructors>? Course_Instructors { get; set; }  // One-to-many relationship with Course_Instructors
+        virtual public Specializations? Specializations { get; set; }
+        virtual public ApplicationUser? applicationUser { get; set; }
+        virtual public ICollection<User_Instructor>? User_Instructors { get; set; } // Many-to-many relationship via User_Instructor
+        virtual public ICollection<Course_Instructors>? Course_Instructors { get; set; }  // One-to-many relationship with Course_Instructors
     }
 }

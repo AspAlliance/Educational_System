@@ -1,8 +1,11 @@
-﻿using EducationalSystem.BLL.Repositories.Interfaces;
-using EducationalSystem.BLL.Repositories.Repositories;
+﻿using Microsoft.AspNetCore.Identity; // For UserManager
+using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.DAL.Models;
-using Microsoft.AspNetCore.Http;
+using Educational_System.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EducationalSystem.Controllers
 {
@@ -10,17 +13,44 @@ namespace EducationalSystem.Controllers
     [ApiController]
     public class InstructorController : ControllerBase
     {
-        IGenericRepository<Instructors> InstructorsRepository;
-        public InstructorController(IGenericRepository<Instructors> instructorsRepository)
+        private readonly IGenericRepository<Instructors> _instructorsRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public InstructorController(IGenericRepository<Instructors> instructorsRepository, UserManager<ApplicationUser> userManager)
         {
-            InstructorsRepository = instructorsRepository;
+            _instructorsRepository = instructorsRepository;
+            _userManager = userManager;
         }
 
-
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(InstructorsRepository.GetAll());
+            // Fetch the instructors along with related entities
+            var instructorsQuery = await _instructorsRepository.GetAll();
+            var instructors = await instructorsQuery
+                .Include(i => i.Course_Instructors)
+                    .ThenInclude(ci => ci.Courses)
+                .Include(i => i.Specializations)
+                .ToListAsync();
+
+            // Map to InstructorInfo ViewModel
+            var instructorInfo = new List<InstructorInfo>();
+            foreach (var instructor in instructors)
+            {
+                // Fetch the user information using UserManager
+                var user = await _userManager.FindByIdAsync(instructor.UserID);
+
+                // Add the instructor data to the ViewModel
+                instructorInfo.Add(new InstructorInfo
+                {
+                    InstructorName = user?.Name, // Assuming 'Name' is a property in ApplicationUser
+                    SpecializationsName = instructor.Specializations?.SpecializationName,
+                    BIO = instructor.BIO,
+                    Courses = instructor.Course_Instructors?.Select(ci => ci.Courses).ToList()
+                });
+            }
+
+            return Ok(instructorInfo);
         }
     }
 }

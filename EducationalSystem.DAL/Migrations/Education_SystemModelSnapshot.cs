@@ -397,9 +397,16 @@ namespace EducationalSystem.DAL.Migrations
                     b.Property<int?>("SpecializationsID")
                         .HasColumnType("int");
 
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("ID");
 
                     b.HasIndex("SpecializationsID");
+
+                    b.HasIndex("UserID")
+                        .IsUnique();
 
                     b.ToTable("Instructors");
                 });
@@ -889,7 +896,15 @@ namespace EducationalSystem.DAL.Migrations
                         .HasForeignKey("SpecializationsID")
                         .OnDelete(DeleteBehavior.SetNull);
 
+                    b.HasOne("EducationalSystem.DAL.Models.ApplicationUser", "applicationUser")
+                        .WithOne("Instructors")
+                        .HasForeignKey("EducationalSystem.DAL.Models.Instructors", "UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Specializations");
+
+                    b.Navigation("applicationUser");
                 });
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.Lesson_Completions", b =>
@@ -1064,6 +1079,9 @@ namespace EducationalSystem.DAL.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("CourseEnrollments");
+
+                    b.Navigation("Instructors")
+                        .IsRequired();
 
                     b.Navigation("Lesson_Completions");
 

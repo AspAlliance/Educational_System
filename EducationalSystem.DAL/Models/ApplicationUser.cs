@@ -11,6 +11,7 @@ namespace EducationalSystem.DAL.Models
         public ICollection<Lesson_Completions> Lesson_Completions { get; set; }
         public ICollection<Assessment_Results> Assessment_Results { get; set; }
         public ICollection<Progress> progresses { get; set; }
+        public Instructors Instructors { get; set; }
         public ICollection<Course_Enrollments> CourseEnrollments { get; set; } // Navigation property
 
         /*o One-to-Many with Instructors

@@ -1,3 +1,4 @@
+using EducationalSystem.BLL;
 using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.BLL.Repositories.Repositories;
 using EducationalSystem.DAL.Models;
@@ -10,7 +11,7 @@ namespace EducationalSystem
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -66,6 +67,12 @@ namespace EducationalSystem
 
             var app = builder.Build();
 
+            using var scope = app.Services.CreateScope();
+            var services = scope.ServiceProvider;
+
+            await RunSeedingAsync(services);
+
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -78,6 +85,30 @@ namespace EducationalSystem
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static async Task RunSeedingAsync(IServiceProvider services)
+        {
+            var loggerFactory = services.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger<Program>();
+
+            try
+            {
+                var dbContext = services.GetRequiredService<Education_System>();
+                var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+                await dbContext.Database.MigrateAsync();
+                await Education_System_Seeding.SeedUsersAndRolesAsync(userManager, roleManager);
+                await Education_System_Seeding.SeedAsync(dbContext);
+
+                logger.LogInformation("Database migration and seeding completed.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error during database seeding: {Message}", ex.Message);
+                throw;
+            }
         }
     }
 }

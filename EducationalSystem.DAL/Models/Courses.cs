@@ -4,6 +4,7 @@
     {
         public string CourseTitle { get; set; }
         public string Description { get; set; }
+        public int Duration { get; set; }
         public int CategoryID { get; set; } // Foreign key for Categories
         public DateTime? CreatedDate { get; set; }
         public string ThumbnailURL { get; set; }

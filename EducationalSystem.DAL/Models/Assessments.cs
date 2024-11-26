@@ -5,6 +5,8 @@ namespace EducationalSystem.DAL.Models
 {
     public class Assessments : BaseEntity
     {
+        public string AssessmentTitle {  get; set; }
+        public string AssessmentDescription { get; set; } = string.Empty;
         public int CourseID { get; set; }
         public int? LessonID { get; set; }
         public string AssessmentType { get; set; }

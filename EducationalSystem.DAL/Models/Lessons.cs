@@ -1,4 +1,6 @@
-﻿namespace EducationalSystem.DAL.Models
+﻿using System.ComponentModel;
+
+namespace EducationalSystem.DAL.Models
 {
     public class Lessons : BaseEntity
     {
@@ -7,6 +9,7 @@
         public string Content { get; set; }
         public int LessonOrder { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public string Description { get; set; }
 
         // Inverse navigation for CurrentLesson
         virtual public ICollection<Lesson_Prerequisites> CurrentLessonPrerequisites { get; set; }

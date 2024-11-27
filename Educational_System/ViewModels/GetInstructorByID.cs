@@ -9,7 +9,7 @@ namespace Educational_System.ViewModels
         public string BIO { get; set; }
         public string ProfileImageURL { get; set; }
         public string PhoneNumber { get; set; }
-        public List<Courses> Courses { get; set; } = new List<Courses>();
+        public List<Courses>? Courses { get; set; } = new List<Courses>();
 
 
     }

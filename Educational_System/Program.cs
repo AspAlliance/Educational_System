@@ -1,3 +1,4 @@
+using Educational_System.Helpers;
 using EducationalSystem.BLL;
 using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.BLL.Repositories.Repositories;
@@ -18,6 +19,8 @@ namespace EducationalSystem
             // Add services to the container.
             builder.Services.AddControllers();
 
+            //Config To Enable Auto Mapper 
+            builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
             // Add DbContext with the MigrationsAssembly
             builder.Services.AddDbContext<Education_System>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DB1"),

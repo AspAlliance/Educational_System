@@ -30,6 +30,7 @@ namespace EducationalSystem
             builder.Services.AddScoped<IGenericRepository<Instructors>, GenericReposiory<Instructors>>();
             builder.Services.AddScoped<IGenericRepository<Courses>, GenericReposiory<Courses>>();
             builder.Services.AddScoped<IGenericRepository<Course_Instructors>, GenericReposiory<Course_Instructors>>();
+            builder.Services.AddScoped(typeof(ILessonRepository), typeof(LessonRepository));
 
             // Add Swagger for API documentation
             builder.Services.AddEndpointsApiExplorer();

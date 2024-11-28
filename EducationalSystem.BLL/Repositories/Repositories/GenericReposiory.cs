@@ -59,6 +59,7 @@ namespace EducationalSystem.BLL.Repositories.Repositories
             }
             else*/
             #endregion
+
             return await _dbContext.Set<T>().FindAsync(id);
         }
 

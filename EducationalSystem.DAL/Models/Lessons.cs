@@ -7,6 +7,8 @@
         public string Content { get; set; }
         public int LessonOrder { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public int SubLessonID { get; set; } // Foreign key for Courses
+        public string LessonDescription { get; set; }
 
         // Inverse navigation for CurrentLesson
         virtual public ICollection<Lesson_Prerequisites> CurrentLessonPrerequisites { get; set; }
@@ -19,5 +21,6 @@
 
         // Navigation property for Courses
         virtual public Courses Courses { get; set; }
+        virtual public SubLessons SubLessons { get; set; }
     }
 }

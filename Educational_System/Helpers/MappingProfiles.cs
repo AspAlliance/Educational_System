@@ -11,6 +11,11 @@ namespace Educational_System.Helpers
         {
             CreateMap<Assessments, AssessmentsDto>()
                 .ReverseMap();
+            CreateMap<RegisterBS, ApplicationUser>()
+                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password));
+
+        
+
 
         }
     }

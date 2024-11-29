@@ -29,6 +29,26 @@ namespace EducationalSystem.DAL.Models.Config
                 .WithMany(l => l.Assessments)    // Inverse navigation property
                 .HasForeignKey(a => a.LessonID)  // Foreign key property
                 .OnDelete(DeleteBehavior.NoAction);  // Prevent cascading delete/update for LessonID
+            
+            builder
+                .HasMany(t => t.TextSubmissions)
+                .WithOne(a => a.Assessments)
+                .HasForeignKey(a => a.AssessmentID)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder
+                .HasMany(t => t.FileSubmissions)
+                .WithOne(a => a.Assessments)
+                .HasForeignKey(a => a.AssessmentID)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder
+                .HasOne(t => t.Rubrics)
+                .WithOne(a => a.Assessments)
+                .HasForeignKey<Rubrics>(a => a.AssessmentID)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
         }
     }
 }

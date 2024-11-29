@@ -15,9 +15,11 @@ namespace EducationalSystem.Controllers
     {
         private readonly IGenericRepository<Instructors> _instructorsRepository;
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public InstructorController(IGenericRepository<Instructors> instructorsRepository, UserManager<ApplicationUser> userManager)
+        private readonly IInstructorRepository instructorRepository;
+        public InstructorController(IGenericRepository<Instructors> instructorsRepository,IInstructorRepository instructorRepository,
+            UserManager<ApplicationUser> userManager)
         {
+            this.instructorRepository = instructorRepository;
             _instructorsRepository = instructorsRepository;
             _userManager = userManager;
         }
@@ -51,6 +53,12 @@ namespace EducationalSystem.Controllers
             }
 
             return Ok(instructorInfo);
+        }
+        [HttpGet("users/{id}")]
+        public async Task<IActionResult> GetUsersOfInstructor(int id)
+        {
+            var users = await instructorRepository.GeInstructorUsersAsync(id);
+            return Ok(users);
         }
     }
 }

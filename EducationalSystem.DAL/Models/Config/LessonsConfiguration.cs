@@ -31,6 +31,13 @@ namespace EducationalSystem.DAL.Models.Config
 
             // Key configuration
             builder.HasKey(x => x.ID);
+            //
+            builder
+    .HasOne(l => l.SubLessons)
+    .WithMany(s => s.Lessons)  // Assuming SubLessons has a collection of Lessons
+    .HasForeignKey(l => l.SubLessonID)
+    .OnDelete(DeleteBehavior.NoAction); // Adjust the delete behavior as needed
+
         }
     }
 }

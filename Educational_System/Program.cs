@@ -60,7 +60,7 @@ namespace EducationalSystem
                 builder.Services.AddScoped(interfaceType, implementationType);
             }
 
-            //builder.Services.AddScoped<IGenericRepository<Instructors>, GenericReposiory<Instructors>>();
+            builder.Services.AddScoped<IInstructorRepository, InstructorRepository> ();
             //builder.Services.AddScoped<IGenericRepository<Courses>, GenericReposiory<Courses>>();
             //builder.Services.AddScoped<IGenericRepository<Course_Instructors>, GenericReposiory<Course_Instructors>>();
 

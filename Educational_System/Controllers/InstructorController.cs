@@ -9,6 +9,7 @@ using AutoMapper;
 using Educational_System.Dto;
 using NuGet.Protocol;
 using Newtonsoft.Json;
+using EducationalSystem.BLL.Specification.Specs;
 
 namespace EducationalSystem.Controllers
 {
@@ -32,8 +33,10 @@ namespace EducationalSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-
-            var instructors = await _instructorRepository.GetAll();
+            // Define the filtering criteria with Specification.
+            var instructorSpec = new InstructorSpecification();
+            //get all instructors based on the defined specification.
+            var instructors = await _instructorRepository.GetAllWithSpec(instructorSpec);
 
             var instructorInfo = _mapper.Map<List<InstructorsDto>>(instructors);
 

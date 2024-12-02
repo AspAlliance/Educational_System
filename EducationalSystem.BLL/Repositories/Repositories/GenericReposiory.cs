@@ -1,4 +1,5 @@
 ﻿using EducationalSystem.BLL.Repositories.Interfaces;
+using EducationalSystem.BLL.Specification;
 using EducationalSystem.DAL.Models;
 using EducationalSystem.DAL.Models.Context;
 using Microsoft.EntityFrameworkCore;
@@ -33,39 +34,36 @@ namespace EducationalSystem.BLL.Repositories.Repositories
 
         public async Task<IQueryable<T>> GetAll()
         {
-
-            if (typeof(T) == typeof(Instructors))
-            {
-                return (IQueryable<T>)_dbContext.Set<Instructors>().Include(i => i.applicationUser)
-                                                            .Include(i => i.Course_Instructors)
-                                                            .ThenInclude(ci => ci.Courses)
-                                                            .Include(i => i.Specializations);
-                                                            
-            }
-            //else if (typeof(T) == typeof(Assessments))
-            //{
-            //    return (IQueryable<T>)_dbContext.Set<Assessments>().Include(i => i.Courses)
-            //                                                       .Include(l => l.Lessons)
-            //                                                       .Include(ts => ts.TextSubmissions)
-            //                                                       .Include(fs => fs.FileSubmissions)
-            //                                                       .Include(r => r.Rubrics)
-            //                                                       .AsNoTracking();
-            //}
-            else
             return (IQueryable<T>)_dbContext.Set<T>().AsNoTracking(); // Optimize for read-only query
+        }
+
+        public async Task<IQueryable<T>> GetAllWithSpec(ISpecification<T> specification = null)
+        {
+            IQueryable<T> query = _dbContext.Set<T>().AsNoTracking();
+
+            if (specification != null)
+            {
+                query = specification.Apply(query);
+            }
+
+            return await Task.FromResult(query);
         }
 
         public async Task<T> GetByIdAsync(int id)
         {
-            if (typeof(T) == typeof(Instructors))
-            {
-                var course = await _dbContext.Set<Instructors>().Include(i => i.Course_Instructors)
-                                                            .ThenInclude(ci => ci.Courses)
-                                                            .Include(i => i.Specializations).FirstOrDefaultAsync(a => a.ID == id);
-                return course as T;
-            }
-            else
             return await _dbContext.Set<T>().FindAsync(id);
+        }
+
+        public async Task<T> GetByIdWithSpecAsync(int id, ISpecification<T> specification = null)
+        {
+            IQueryable<T> query = _dbContext.Set<T>().AsNoTracking();
+
+            if (specification != null)
+            {
+                query = specification.Apply(query);
+            }
+
+            return await query.FirstOrDefaultAsync(e => e.ID == id);
         }
 
         public async Task UpdateAsync(T entity)

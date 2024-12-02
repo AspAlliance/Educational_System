@@ -1,4 +1,5 @@
-﻿using EducationalSystem.DAL.Models;
+﻿using EducationalSystem.BLL.Specification;
+using EducationalSystem.DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,5 +18,9 @@ namespace EducationalSystem.BLL.Repositories.Interfaces
         Task UpdateAsync(T entity);
 
         Task DeleteAsync(T entity);
+
+        Task<IQueryable<T>> GetAllWithSpec(ISpecification<T> specification = null);
+
+        Task<T> GetByIdWithSpecAsync(int id, ISpecification<T> specification = null);
     }
 }

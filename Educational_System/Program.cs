@@ -60,9 +60,6 @@ namespace EducationalSystem
                 builder.Services.AddScoped(interfaceType, implementationType);
             }
 
-            builder.Services.AddScoped<IInstructorRepository, InstructorRepository> ();
-            //builder.Services.AddScoped<IGenericRepository<Courses>, GenericReposiory<Courses>>();
-            //builder.Services.AddScoped<IGenericRepository<Course_Instructors>, GenericReposiory<Course_Instructors>>();
 
             // Add Swagger for API documentation
             builder.Services.AddEndpointsApiExplorer();

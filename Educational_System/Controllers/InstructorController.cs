@@ -16,15 +16,15 @@ namespace EducationalSystem.Controllers
     [ApiController]
     public class InstructorController : ControllerBase
     {
-        private readonly IGenericRepository<Instructors> _instructorsRepository;
+
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IInstructorRepository instructorRepository;
+        private readonly IInstructorRepository _instructorRepository;
         private readonly IMapper _mapper;
-        public InstructorController(IGenericRepository<Instructors> instructorsRepository,IInstructorRepository instructorRepository,
+        public InstructorController(IInstructorRepository instructorRepository,
             UserManager<ApplicationUser> userManager, IMapper mapper)
         {
-            this.instructorRepository = instructorRepository;
-            _instructorsRepository = instructorsRepository;
+
+            _instructorRepository = instructorRepository;
             _userManager = userManager;
             _mapper = mapper;
         }
@@ -33,7 +33,7 @@ namespace EducationalSystem.Controllers
         public async Task<IActionResult> GetAll()
         {
 
-            var instructors = await _instructorsRepository.GetAll();
+            var instructors = await _instructorRepository.GetAll();
 
             var instructorInfo = _mapper.Map<List<InstructorsDto>>(instructors);
 
@@ -56,7 +56,7 @@ namespace EducationalSystem.Controllers
         [HttpGet("users/{id}")]
         public async Task<IActionResult> GetUsersOfInstructor(int id)
         {
-            var users = await instructorRepository.GeInstructorUsersAsync(id);
+            var users = await _instructorRepository.GeInstructorUsersAsync(id);
             return Ok(users);
         }
     }

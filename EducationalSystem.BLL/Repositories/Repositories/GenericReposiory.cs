@@ -33,32 +33,38 @@ namespace EducationalSystem.BLL.Repositories.Repositories
 
         public async Task<IQueryable<T>> GetAll()
         {
-            // if you want to Check if the generic type T is of specific type use this (check Example)↓↓↓
-            // Use AsNoTracking to optimize for read-only queries (improves performance).
-            #region Example
-            /*if (typeof(T) == typeof(Courses))
-            {
-                return (IQueryable<T>)_dbContext.Set<Courses>().Include(C => C.Lessons)
-                                                               .Include(C => C.Course_Instructors).AsNoTracking().OrderByDescending(C => C.CourseID).Take(1000);
-            }
-            else*/
-            #endregion
 
+            if (typeof(T) == typeof(Instructors))
+            {
+                return (IQueryable<T>)_dbContext.Set<Instructors>().Include(i => i.applicationUser)
+                                                            .Include(i => i.Course_Instructors)
+                                                            .ThenInclude(ci => ci.Courses)
+                                                            .Include(i => i.Specializations);
+                                                            
+            }
+            //else if (typeof(T) == typeof(Assessments))
+            //{
+            //    return (IQueryable<T>)_dbContext.Set<Assessments>().Include(i => i.Courses)
+            //                                                       .Include(l => l.Lessons)
+            //                                                       .Include(ts => ts.TextSubmissions)
+            //                                                       .Include(fs => fs.FileSubmissions)
+            //                                                       .Include(r => r.Rubrics)
+            //                                                       .AsNoTracking();
+            //}
+            else
             return (IQueryable<T>)_dbContext.Set<T>().AsNoTracking(); // Optimize for read-only query
         }
 
         public async Task<T> GetByIdAsync(int id)
         {
-            // if you want to Check if the generic type T is of specific type use this (check Example)↓↓↓
-            #region Example
-            /*if (typeof(T) == typeof(Courses))
+            if (typeof(T) == typeof(Instructors))
             {
-                var course = await _dbContext.Set<Courses>().Include(C => C.Lessons)
-                                                               .Include(C => C.Course_Instructors).FirstOrDefaultAsync(a => a.CourseID == id);
+                var course = await _dbContext.Set<Instructors>().Include(i => i.Course_Instructors)
+                                                            .ThenInclude(ci => ci.Courses)
+                                                            .Include(i => i.Specializations).FirstOrDefaultAsync(a => a.ID == id);
                 return course as T;
             }
-            else*/
-            #endregion
+            else
             return await _dbContext.Set<T>().FindAsync(id);
         }
 

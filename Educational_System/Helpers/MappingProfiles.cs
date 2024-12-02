@@ -14,7 +14,13 @@ namespace Educational_System.Helpers
             CreateMap<RegisterBS, ApplicationUser>()
                 .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => src.Password));
 
-        
+            CreateMap<Instructors, InstructorsDto>()
+                .ForMember(dest => dest.InstructorName, opt => opt.MapFrom(src => src.applicationUser.Name))
+                .ForMember(dest => dest.SpecializationsName, opt => opt.MapFrom(src => src.Specializations.SpecializationName)) 
+                .ForMember(dest => dest.Courses, opt => opt.MapFrom(src => src.Course_Instructors.Select(ci => ci.Courses).ToList()))
+              //.ForMember(dest => dest.CourseTitles, opt => opt.MapFrom(src => src.Course_Instructors.Select(ci => ci.Courses.CourseTitle).ToList()))
+                .ReverseMap();
+
 
 
         }

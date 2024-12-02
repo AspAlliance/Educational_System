@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EducationalSystem.BLL.Repositories.Interfaces
 {
-    public interface IInstructorRepository
+    public interface IInstructorRepository : IGenericRepository<Instructors>
     {
         Task<IEnumerable<ApplicationUser>> GeInstructorUsersAsync(int instructorId);
     }

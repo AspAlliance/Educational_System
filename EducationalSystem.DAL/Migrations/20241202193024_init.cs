@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EducationalSystem.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class m0 : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,7 +31,7 @@ namespace EducationalSystem.DAL.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProfileImageURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProfileImageURL = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -84,7 +84,8 @@ namespace EducationalSystem.DAL.Migrations
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SpecializationName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    SpecializationName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -327,28 +328,6 @@ namespace EducationalSystem.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Lessons",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CourseID = table.Column<int>(type: "int", nullable: false),
-                    LessonTitle = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LessonOrder = table.Column<int>(type: "int", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2(0)", precision: 0, nullable: false, defaultValueSql: "GETDATE()")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Lessons", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Lessons_Courses_CourseID",
-                        column: x => x.CourseID,
-                        principalTable: "Courses",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "progresses",
                 columns: table => new
                 {
@@ -380,6 +359,27 @@ namespace EducationalSystem.DAL.Migrations
                         principalTable: "Courses",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubLessons",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CourseID = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubLessons", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_SubLessons_Courses_CourseID",
+                        column: x => x.CourseID,
+                        principalTable: "Courses",
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -429,6 +429,35 @@ namespace EducationalSystem.DAL.Migrations
                         name: "FK_User_Instructor_Instructors_InstructorId",
                         column: x => x.InstructorId,
                         principalTable: "Instructors",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Lessons",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CourseID = table.Column<int>(type: "int", nullable: false),
+                    LessonTitle = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LessonOrder = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2(0)", precision: 0, nullable: false, defaultValueSql: "GETDATE()"),
+                    SubLessonID = table.Column<int>(type: "int", nullable: false),
+                    LessonDescription = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Lessons", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Lessons_Courses_CourseID",
+                        column: x => x.CourseID,
+                        principalTable: "Courses",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Lessons_SubLessons_SubLessonID",
+                        column: x => x.SubLessonID,
+                        principalTable: "SubLessons",
                         principalColumn: "ID");
                 });
 
@@ -547,6 +576,34 @@ namespace EducationalSystem.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FileSubmissions",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AssessmentID = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SubmittedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Grade = table.Column<int>(type: "int", nullable: false),
+                    Feedback = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileSubmissions", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_FileSubmissions_AspNetUsers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_FileSubmissions_Assessments_AssessmentID",
+                        column: x => x.AssessmentID,
+                        principalTable: "Assessments",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Questions",
                 columns: table => new
                 {
@@ -572,6 +629,54 @@ namespace EducationalSystem.DAL.Migrations
                         principalTable: "QuestionTypes",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Rubrics",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AssessmentID = table.Column<int>(type: "int", nullable: false),
+                    Criterion = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MaxPoints = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rubrics", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Rubrics_Assessments_AssessmentID",
+                        column: x => x.AssessmentID,
+                        principalTable: "Assessments",
+                        principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TextSubmissions",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AssessmentID = table.Column<int>(type: "int", nullable: false),
+                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SubmittedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ResponseText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Grade = table.Column<int>(type: "int", nullable: false),
+                    Feedback = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TextSubmissions", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_TextSubmissions_AspNetUsers_UserID",
+                        column: x => x.UserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TextSubmissions_Assessments_AssessmentID",
+                        column: x => x.AssessmentID,
+                        principalTable: "Assessments",
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -701,6 +806,16 @@ namespace EducationalSystem.DAL.Migrations
                 column: "CourseID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_FileSubmissions_AssessmentID",
+                table: "FileSubmissions",
+                column: "AssessmentID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FileSubmissions_UserID",
+                table: "FileSubmissions",
+                column: "UserID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Instructors_SpecializationsID",
                 table: "Instructors",
                 column: "SpecializationsID");
@@ -742,6 +857,11 @@ namespace EducationalSystem.DAL.Migrations
                 column: "CourseID");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Lessons_SubLessonID",
+                table: "Lessons",
+                column: "SubLessonID");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_progresses_ApplicationUserId",
                 table: "progresses",
                 column: "ApplicationUserId");
@@ -765,6 +885,27 @@ namespace EducationalSystem.DAL.Migrations
                 name: "IX_Questions_QuestionTypeID",
                 table: "Questions",
                 column: "QuestionTypeID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rubrics_AssessmentID",
+                table: "Rubrics",
+                column: "AssessmentID",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SubLessons_CourseID",
+                table: "SubLessons",
+                column: "CourseID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TextSubmissions_AssessmentID",
+                table: "TextSubmissions",
+                column: "AssessmentID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TextSubmissions_UserID",
+                table: "TextSubmissions",
+                column: "UserID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_User_Instructor_InstructorId",
@@ -814,6 +955,9 @@ namespace EducationalSystem.DAL.Migrations
                 name: "Discounts");
 
             migrationBuilder.DropTable(
+                name: "FileSubmissions");
+
+            migrationBuilder.DropTable(
                 name: "Lesson_Completions");
 
             migrationBuilder.DropTable(
@@ -821,6 +965,12 @@ namespace EducationalSystem.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "progresses");
+
+            migrationBuilder.DropTable(
+                name: "Rubrics");
+
+            migrationBuilder.DropTable(
+                name: "TextSubmissions");
 
             migrationBuilder.DropTable(
                 name: "User_Instructor");
@@ -848,6 +998,9 @@ namespace EducationalSystem.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "Lessons");
+
+            migrationBuilder.DropTable(
+                name: "SubLessons");
 
             migrationBuilder.DropTable(
                 name: "Courses");

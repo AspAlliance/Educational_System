@@ -20,11 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repository\Interfaces\" />
-    <Folder Include="Repository\Classes\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\EducationalSystem.BLL\EducationalSystem.BLL.csproj" />
     <ProjectReference Include="..\EducationalSystem.DAL\EducationalSystem.DAL.csproj" />
   </ItemGroup>

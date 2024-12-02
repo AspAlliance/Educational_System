@@ -22,14 +22,14 @@ namespace EducationalSystem.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> GetAll()
         {
             var assessments = await _repository.GetAll();
             return Ok(assessments);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAssessment(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var assessment = await _repository.GetByIdAsync(id);
             if (assessment == null)
@@ -48,7 +48,7 @@ namespace EducationalSystem.Controllers
                 return BadRequest("Assessment is null.");
 
             await _repository.AddAsync(mappedassessment);
-            return CreatedAtAction(nameof(GetAssessment), new { id = mappedassessment.ID }, mappedassessment);
+            return CreatedAtAction(nameof(GetById), new { id = mappedassessment.ID }, mappedassessment);
         }
 
         [HttpPut("{id}")]

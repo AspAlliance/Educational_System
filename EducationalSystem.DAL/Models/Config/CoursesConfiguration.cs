@@ -48,6 +48,12 @@ namespace EducationalSystem.DAL.Models.Config
                 .HasForeignKey(l => l.CourseID) // Foreign key in Lessons
                 .OnDelete(DeleteBehavior.Cascade); // Cascade delete behavior
 
+            // Configure the relationship between Courses and SubLessons (one-to-many)
+            builder.HasMany(c => c.SubLessons) // A Course can have many SubLessons
+                .WithOne(l => l.Courses) // Each SubLessons belongs to one Course
+                .HasForeignKey(l => l.CourseID) // Foreign key in SubLessons
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete behavior
+
             // Configure the relationship between Courses and Discounts (one-to-many)
             builder.HasMany(c => c.Discounts) // A Course can have many Discounts
                 .WithOne(d => d.Courses) // Each Discount belongs to one Course

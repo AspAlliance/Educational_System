@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity; // For UserManager
 using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.DAL.Models;
-using Educational_System.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Educational_System.Dto;
+using NuGet.Protocol;
+using Newtonsoft.Json;
+using EducationalSystem.BLL.Specification.Specs;
 
 namespace EducationalSystem.Controllers
 {
@@ -13,44 +17,50 @@ namespace EducationalSystem.Controllers
     [ApiController]
     public class InstructorController : ControllerBase
     {
-        private readonly IGenericRepository<Instructors> _instructorsRepository;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public InstructorController(IGenericRepository<Instructors> instructorsRepository, UserManager<ApplicationUser> userManager)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IInstructorRepository _instructorRepository;
+        private readonly IMapper _mapper;
+        public InstructorController(IInstructorRepository instructorRepository,
+            UserManager<ApplicationUser> userManager, IMapper mapper)
         {
-            _instructorsRepository = instructorsRepository;
+
+            _instructorRepository = instructorRepository;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            // Fetch the instructors along with related entities
-            var instructorsQuery = await _instructorsRepository.GetAll();
-            var instructors = await instructorsQuery
-                .Include(i => i.Course_Instructors)
-                    .ThenInclude(ci => ci.Courses)
-                .Include(i => i.Specializations)
-                .ToListAsync();
+            // Define the filtering criteria with Specification.
+            var instructorSpec = new InstructorSpecification();
+            //get all instructors based on the defined specification.
+            var instructors = await _instructorRepository.GetAllWithSpec(instructorSpec);
 
-            // Map to InstructorInfo ViewModel
-            var instructorInfo = new List<InstructorInfo>();
-            foreach (var instructor in instructors)
+            var instructorInfo = _mapper.Map<List<InstructorsDto>>(instructors);
+
+            // The following block sets up custom JSON settings, but it's not needed here.
+            // ASP.NET Core already handles JSON serialization by default, so we can simplify the code.
+            var jsonSettings = new JsonSerializerSettings
             {
-                // Fetch the user information using UserManager
-                var user = await _userManager.FindByIdAsync(instructor.UserID);
+                // Prevents circular references in JSON without infite loop
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore, 
+                Formatting = Formatting.Indented
+            };
+            // Return the data as JSON with manual serialization. This can be simplified.
+            return Ok(JsonConvert.SerializeObject(instructorInfo, jsonSettings));
 
-                // Add the instructor data to the ViewModel
-                instructorInfo.Add(new InstructorInfo
-                {
-                    InstructorName = user?.Name, // Assuming 'Name' is a property in ApplicationUser
-                    SpecializationsName = instructor.Specializations?.SpecializationName,
-                    BIO = instructor.BIO,
-                    Courses = instructor.Course_Instructors?.Select(ci => ci.Courses).ToList()
-                });
-            }
+            // A simpler and better approach is to just return the DTO directly, as ASP.NET Core 
+            // takes care of serializing the response for you.
+            //return Ok(instructorInfo);
+        }
 
-            return Ok(instructorInfo);
+        [HttpGet("users/{id}")]
+        public async Task<IActionResult> GetUsersOfInstructor(int id)
+        {
+            var users = await _instructorRepository.GeInstructorUsersAsync(id);
+            return Ok(users);
         }
     }
 }

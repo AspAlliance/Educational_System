@@ -1,4 +1,5 @@
 ﻿using EducationalSystem.BLL.Repositories.Interfaces;
+using EducationalSystem.BLL.Specification;
 using EducationalSystem.DAL.Models;
 using EducationalSystem.DAL.Models.Context;
 using Microsoft.EntityFrameworkCore;
@@ -33,33 +34,36 @@ namespace EducationalSystem.BLL.Repositories.Repositories
 
         public async Task<IQueryable<T>> GetAll()
         {
-            // if you want to Check if the generic type T is of specific type use this (check Example)↓↓↓
-            // Use AsNoTracking to optimize for read-only queries (improves performance).
-            #region Example
-            /*if (typeof(T) == typeof(Courses))
-            {
-                return (IQueryable<T>)_dbContext.Set<Courses>().Include(C => C.Lessons)
-                                                               .Include(C => C.Course_Instructors).AsNoTracking().OrderByDescending(C => C.CourseID).Take(1000);
-            }
-            else*/
-            #endregion
-
             return (IQueryable<T>)_dbContext.Set<T>().AsNoTracking(); // Optimize for read-only query
+        }
+
+        public async Task<IQueryable<T>> GetAllWithSpec(ISpecification<T> specification = null)
+        {
+            IQueryable<T> query = _dbContext.Set<T>().AsNoTracking();
+
+            if (specification != null)
+            {
+                query = specification.Apply(query);
+            }
+
+            return await Task.FromResult(query);
         }
 
         public async Task<T> GetByIdAsync(int id)
         {
-            // if you want to Check if the generic type T is of specific type use this (check Example)↓↓↓
-            #region Example
-            /*if (typeof(T) == typeof(Courses))
-            {
-                var course = await _dbContext.Set<Courses>().Include(C => C.Lessons)
-                                                               .Include(C => C.Course_Instructors).FirstOrDefaultAsync(a => a.CourseID == id);
-                return course as T;
-            }
-            else*/
-            #endregion
             return await _dbContext.Set<T>().FindAsync(id);
+        }
+
+        public async Task<T> GetByIdWithSpecAsync(int id, ISpecification<T> specification = null)
+        {
+            IQueryable<T> query = _dbContext.Set<T>().AsNoTracking();
+
+            if (specification != null)
+            {
+                query = specification.Apply(query);
+            }
+
+            return await query.FirstOrDefaultAsync(e => e.ID == id);
         }
 
         public async Task UpdateAsync(T entity)

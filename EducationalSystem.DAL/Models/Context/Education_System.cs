@@ -39,5 +39,6 @@ namespace EducationalSystem.DAL.Models.Context
         public DbSet<QuestionType> questionTypes { get; set; }
         public DbSet<Specializations> Specializations { get; set; }
         public DbSet<User_Instructor> User_Instructor { get; set; }
+        public DbSet<SubLessons> SubLessons { get; set; }
     }
 }

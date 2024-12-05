@@ -69,7 +69,6 @@ namespace EducationalSystem.DAL.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("ProfileImageURL")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
@@ -369,6 +368,44 @@ namespace EducationalSystem.DAL.Migrations
                     b.ToTable("Discounts");
                 });
 
+            modelBuilder.Entity("EducationalSystem.DAL.Models.FileSubmissions", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("AssessmentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Feedback")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Grade")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SubmittedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AssessmentID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("FileSubmissions");
+                });
+
             modelBuilder.Entity("EducationalSystem.DAL.Models.Instructors", b =>
                 {
                     b.Property<int>("ID")
@@ -491,6 +528,10 @@ namespace EducationalSystem.DAL.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
+                    b.Property<string>("LessonDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("LessonOrder")
                         .HasColumnType("int");
 
@@ -499,9 +540,14 @@ namespace EducationalSystem.DAL.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("SubLessonID")
+                        .HasColumnType("int");
+
                     b.HasKey("ID");
 
                     b.HasIndex("CourseID");
+
+                    b.HasIndex("SubLessonID");
 
                     b.ToTable("Lessons");
                 });
@@ -592,6 +638,32 @@ namespace EducationalSystem.DAL.Migrations
                     b.ToTable("Questions");
                 });
 
+            modelBuilder.Entity("EducationalSystem.DAL.Models.Rubrics", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("AssessmentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Criterion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MaxPoints")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AssessmentID")
+                        .IsUnique();
+
+                    b.ToTable("Rubrics");
+                });
+
             modelBuilder.Entity("EducationalSystem.DAL.Models.Specializations", b =>
                 {
                     b.Property<int>("ID")
@@ -611,6 +683,73 @@ namespace EducationalSystem.DAL.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Specializations");
+                });
+
+            modelBuilder.Entity("EducationalSystem.DAL.Models.SubLessons", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("CourseID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CourseID");
+
+                    b.ToTable("SubLessons");
+                });
+
+            modelBuilder.Entity("EducationalSystem.DAL.Models.TextSubmissions", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("AssessmentID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Feedback")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Grade")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResponseText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SubmittedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("AssessmentID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("TextSubmissions");
                 });
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.User_Instructor", b =>
@@ -893,6 +1032,25 @@ namespace EducationalSystem.DAL.Migrations
                     b.Navigation("Courses");
                 });
 
+            modelBuilder.Entity("EducationalSystem.DAL.Models.FileSubmissions", b =>
+                {
+                    b.HasOne("EducationalSystem.DAL.Models.Assessments", "Assessments")
+                        .WithMany("FileSubmissions")
+                        .HasForeignKey("AssessmentID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("EducationalSystem.DAL.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("FileSubmissions")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Assessments");
+                });
+
             modelBuilder.Entity("EducationalSystem.DAL.Models.Instructors", b =>
                 {
                     b.HasOne("EducationalSystem.DAL.Models.Specializations", "Specializations")
@@ -961,7 +1119,15 @@ namespace EducationalSystem.DAL.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("EducationalSystem.DAL.Models.SubLessons", "SubLessons")
+                        .WithMany("Lessons")
+                        .HasForeignKey("SubLessonID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Courses");
+
+                    b.Navigation("SubLessons");
                 });
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.Progress", b =>
@@ -1004,6 +1170,47 @@ namespace EducationalSystem.DAL.Migrations
                     b.Navigation("Assessments");
 
                     b.Navigation("QuestionType");
+                });
+
+            modelBuilder.Entity("EducationalSystem.DAL.Models.Rubrics", b =>
+                {
+                    b.HasOne("EducationalSystem.DAL.Models.Assessments", "Assessments")
+                        .WithOne("Rubrics")
+                        .HasForeignKey("EducationalSystem.DAL.Models.Rubrics", "AssessmentID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Assessments");
+                });
+
+            modelBuilder.Entity("EducationalSystem.DAL.Models.SubLessons", b =>
+                {
+                    b.HasOne("EducationalSystem.DAL.Models.Courses", "Courses")
+                        .WithMany("SubLessons")
+                        .HasForeignKey("CourseID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Courses");
+                });
+
+            modelBuilder.Entity("EducationalSystem.DAL.Models.TextSubmissions", b =>
+                {
+                    b.HasOne("EducationalSystem.DAL.Models.Assessments", "Assessments")
+                        .WithMany("TextSubmissions")
+                        .HasForeignKey("AssessmentID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("EducationalSystem.DAL.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany("TextSubmissions")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Assessments");
                 });
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.User_Instructor", b =>
@@ -1084,10 +1291,13 @@ namespace EducationalSystem.DAL.Migrations
 
                     b.Navigation("CourseEnrollments");
 
-                    b.Navigation("Instructors")
-                        .IsRequired();
+                    b.Navigation("FileSubmissions");
+
+                    b.Navigation("Instructors");
 
                     b.Navigation("Lesson_Completions");
+
+                    b.Navigation("TextSubmissions");
 
                     b.Navigation("User_Instructor");
 
@@ -1096,7 +1306,13 @@ namespace EducationalSystem.DAL.Migrations
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.Assessments", b =>
                 {
+                    b.Navigation("FileSubmissions");
+
                     b.Navigation("Questions");
+
+                    b.Navigation("Rubrics");
+
+                    b.Navigation("TextSubmissions");
                 });
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.Categories", b =>
@@ -1116,6 +1332,8 @@ namespace EducationalSystem.DAL.Migrations
                     b.Navigation("Discounts");
 
                     b.Navigation("Lessons");
+
+                    b.Navigation("SubLessons");
                 });
 
             modelBuilder.Entity("EducationalSystem.DAL.Models.Instructors", b =>
@@ -1146,6 +1364,11 @@ namespace EducationalSystem.DAL.Migrations
             modelBuilder.Entity("EducationalSystem.DAL.Models.Specializations", b =>
                 {
                     b.Navigation("Instructors");
+                });
+
+            modelBuilder.Entity("EducationalSystem.DAL.Models.SubLessons", b =>
+                {
+                    b.Navigation("Lessons");
                 });
 #pragma warning restore 612, 618
         }

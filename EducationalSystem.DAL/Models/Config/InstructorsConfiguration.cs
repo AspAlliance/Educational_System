@@ -33,6 +33,10 @@ namespace EducationalSystem.DAL.Models.Config
                 .HasForeignKey<Instructors>(i => i.UserID) // Configure FK on Instructor
                 .OnDelete(DeleteBehavior.Cascade); // Ensure UserID is nullable
 
+            builder.Property(i => i.Status)
+                .HasConversion(
+                v => v.ToString(),
+                v => (InstructorStatus)Enum.Parse(typeof(InstructorStatus), v));
         }
     }
 }

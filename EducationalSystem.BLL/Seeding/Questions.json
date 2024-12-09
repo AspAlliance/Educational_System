@@ -1,0 +1,26 @@
+[
+    {
+        "AssessmentID": 1,
+        "QuestionText": "What is Algebra?",
+        "QuestionTypeID": 1,
+        "Points": 10
+    },
+    {
+        "AssessmentID": 2,
+        "QuestionText": "What is Newton's Second Law?",
+        "QuestionTypeID": 2,
+        "Points": 15
+    },
+    {
+        "AssessmentID": 3,
+        "QuestionText": "What is the main programming paradigm in Python?",
+        "QuestionTypeID": 3,
+        "Points": 10
+    },
+    {
+        "AssessmentID": 4,
+        "QuestionText": "What is Data Analysis?",
+        "QuestionTypeID": 4,
+        "Points": 20
+    }
+]

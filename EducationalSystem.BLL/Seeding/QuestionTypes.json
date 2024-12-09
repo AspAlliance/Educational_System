@@ -1,0 +1,17 @@
+[
+    {
+        "QuestionTypeName": "Multiple Choice"
+    },
+    {
+        "QuestionTypeName": "True/False"
+    },
+    {
+        "QuestionTypeName": "Short Answer"
+    },
+    {
+        "QuestionTypeName": "Essay"
+    },
+    {
+        "QuestionTypeName": "Fill in the Blank"
+    }
+]

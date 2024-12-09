@@ -1,0 +1,38 @@
+[
+    {
+        "CourseID": 1,
+        "LessonID": 1,
+        "AssessmentType": "Quiz",
+        "MaxScore": 100,
+        "CreatedDate": "2024-11-29T21:24:29",
+        "AssessmentDescription": "Algebra basics test",
+        "AssessmentTitle": "Math Assessment"
+    },
+    {
+        "CourseID": 2,
+        "LessonID": 2,
+        "AssessmentType": "Quiz",
+        "MaxScore": 100,
+        "CreatedDate": "2024-11-29T21:24:29",
+        "AssessmentDescription": "Newton's laws test",
+        "AssessmentTitle": "Physics Assessment"
+    },
+    {
+        "CourseID": 3,
+        "LessonID": 3,
+        "AssessmentType": "Quiz",
+        "MaxScore": 100,
+        "CreatedDate": "2024-11-29T21:24:29",
+        "AssessmentDescription": "Python programming test",
+        "AssessmentTitle": "CS Assessment"
+    },
+    {
+        "CourseID": 4,
+        "LessonID": 4,
+        "AssessmentType": "Quiz",
+        "MaxScore": 100,
+        "CreatedDate": "2024-11-29T21:24:29",
+        "AssessmentDescription": "Data analysis test",
+        "AssessmentTitle": "Data Science Assessment"
+    }
+]

@@ -4,7 +4,7 @@ namespace EducationalSystem.DAL.Models
 {
     public class ApplicationUser:IdentityUser
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public string? ProfileImageURL { get; set; }
         virtual public ICollection<User_Instructor>? User_Instructor { get; set; }
         virtual public ICollection<Comments>? Comments { get; set; }

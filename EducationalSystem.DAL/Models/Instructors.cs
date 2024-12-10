@@ -9,10 +9,21 @@
         public int? SpecializationsID { get; set; }
         public string UserID { get; set; }
 
+        // Use enum for status
+        public InstructorStatus? Status { get; set; }
+
         // Navigation properties
         virtual public Specializations? Specializations { get; set; }
         virtual public ApplicationUser? applicationUser { get; set; }
-        virtual public ICollection<User_Instructor>? User_Instructors { get; set; } // Many-to-many relationship via User_Instructor
-        virtual public ICollection<Course_Instructors>? Course_Instructors { get; set; }  // One-to-many relationship with Course_Instructors
+        virtual public ICollection<User_Instructor>? User_Instructors { get; set; }
+        virtual public ICollection<Course_Instructors>? Course_Instructors { get; set; }
+    }
+
+    // Enum inside the same class
+    public enum InstructorStatus
+    {
+        Pending = 0,
+        Approved = 1,
+        Rejected = 2
     }
 }

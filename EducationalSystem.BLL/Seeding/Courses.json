@@ -1,0 +1,38 @@
+[
+    {
+        "CourseTitle": "Mathematics 101",
+        "Description": "Basic Mathematics course",
+        "CategoryID": 1,
+        "CreatedDate": "2024-11-29T21:10:15",
+        "ThumbnailURL": "https://example.com/math101.jpg",
+        "TotalAmount": 100.00,
+        "Duration": 30
+    },
+    {
+        "CourseTitle": "Physics 101",
+        "Description": "Introduction to Physics",
+        "CategoryID": 2,
+        "CreatedDate": "2024-11-29T21:10:15",
+        "ThumbnailURL": "https://example.com/physics101.jpg",
+        "TotalAmount": 120.00,
+        "Duration": 40
+    },
+    {
+        "CourseTitle": "CS 101",
+        "Description": "Introduction to Computer Science",
+        "CategoryID": 3,
+        "CreatedDate": "2024-11-29T21:10:15",
+        "ThumbnailURL": "https://example.com/cs101.jpg",
+        "TotalAmount": 150.00,
+        "Duration": 50
+    },
+    {
+        "CourseTitle": "Data Science 101",
+        "Description": "Beginner level Data Science course",
+        "CategoryID": 4,
+        "CreatedDate": "2024-11-29T21:10:15",
+        "ThumbnailURL": "https://example.com/datascience101.jpg",
+        "TotalAmount": 180.00,
+        "Duration": 60
+    }
+]

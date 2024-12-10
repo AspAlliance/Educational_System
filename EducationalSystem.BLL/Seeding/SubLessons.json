@@ -1,0 +1,26 @@
+[
+    {
+        "CourseID": 1,
+        "Title": "SubLesson 1A",
+        "Description": "Sub content for Math Lesson 1",
+        "CreatedDate": "2024-11-29T21:08:06.5633333"
+    },
+    {
+        "CourseID": 2,
+        "Title": "SubLesson 1A",
+        "Description": "Sub content for Physics Lesson 1",
+        "CreatedDate": "2024-11-29T21:08:06.5633333"
+    },
+    {
+        "CourseID": 3,
+        "Title": "SubLesson 1A",
+        "Description": "Sub content for CS Lesson 1",
+        "CreatedDate": "2024-11-29T21:08:06.5633333"
+    },
+    {
+        "CourseID": 4,
+        "Title": "SubLesson 1A",
+        "Description": "Sub content for Data Science Lesson 1",
+        "CreatedDate": "2024-11-29T21:08:06.5633333"
+    }
+]

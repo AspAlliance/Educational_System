@@ -1,0 +1,22 @@
+[
+    {
+        "UserID": "16d230a6-29ef-48ba-ab4b-aeb4bc817e4d",
+        "EnrollmentDate": "2024-11-29T21:22:21",
+        "CourseId": 1
+    },
+    {
+        "UserID": "361a2e2c-f52d-4687-a216-a00ff2444c6d",
+        "EnrollmentDate": "2024-11-29T21:22:21",
+        "CourseId": 2
+    },
+    {
+        "UserID": "460b15aa-a3ea-4f8e-bd28-8dbe2d5304f0",
+        "EnrollmentDate": "2024-11-29T21:22:21",
+        "CourseId": 3
+    },
+    {
+        "UserID": "5016ad32-cae0-4e8a-8687-038aec7b863d",
+        "EnrollmentDate": "2024-11-29T21:22:21",
+        "CourseId": 4
+    }
+]

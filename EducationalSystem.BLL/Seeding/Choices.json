@@ -1,0 +1,42 @@
+[
+    {
+        "QuestionID": 3,
+        "ChoiceText": "The study of numbers",
+        "IsCorrect": 1
+    },
+    {
+        "QuestionID": 3,
+        "ChoiceText": "The study of shapes",
+        "IsCorrect": 0
+    },
+    {
+        "QuestionID": 4,
+        "ChoiceText": "Force equals mass times acceleration",
+        "IsCorrect": 1
+    },
+    {
+        "QuestionID": 2,
+        "ChoiceText": "Energy equals mass times velocity",
+        "IsCorrect": 0
+    },
+    {
+        "QuestionID": 3,
+        "ChoiceText": "Object-oriented programming",
+        "IsCorrect": 1
+    },
+    {
+        "QuestionID": 3,
+        "ChoiceText": "Functional programming",
+        "IsCorrect": 0
+    },
+    {
+        "QuestionID": 4,
+        "ChoiceText": "Data cleaning and visualization",
+        "IsCorrect": 1
+    },
+    {
+        "QuestionID": 4,
+        "ChoiceText": "Data storage in a database",
+        "IsCorrect": 0
+    }
+]

@@ -14,6 +14,65 @@ namespace EducationalSystem.BLL
     {
         public async static Task SeedAsync(Education_System context)
         {
+            if (!context.Categories.Any())
+            {
+                var categoriesData = File.ReadAllText("../EducationalSystem.BLL/Seeding/Categories.json");
+                var categories = JsonSerializer.Deserialize<List<Categories>>(categoriesData);
+
+                foreach (var item in categories)
+                {
+                    await context.Set<Categories>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            if (!context.Courses.Any())
+            {
+                var coursesData = File.ReadAllText("../EducationalSystem.BLL/Seeding/Courses.json");
+                var courses = JsonSerializer.Deserialize<List<Courses>>(coursesData);
+
+                foreach (var item in courses)
+                {
+                    await context.Set<Courses>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            if (!context.SubLessons.Any())
+            {
+                var subLessonsData = File.ReadAllText("../EducationalSystem.BLL/Seeding/SubLessons.json");
+                var subLessons = JsonSerializer.Deserialize<List<SubLessons>>(subLessonsData);
+
+                foreach (var item in subLessons)
+                {
+                    await context.Set<SubLessons>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            if (!context.Lessons.Any())
+            {
+                var lessonsData = File.ReadAllText("../EducationalSystem.BLL/Seeding/Lessons.json");
+                var lessons = JsonSerializer.Deserialize<List<Lessons>>(lessonsData);
+
+                foreach (var item in lessons)
+                {
+                    await context.Set<Lessons>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            if (!context.Assessments.Any())
+            {
+                var assessmentsData = File.ReadAllText("../EducationalSystem.BLL/Seeding/Assessments.json");
+                var assessments = JsonSerializer.Deserialize<List<Assessments>>(assessmentsData);
+
+                foreach (var item in assessments)
+                {
+                    await context.Set<Assessments>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
 
             if (!context.Specializations.Any())
             {
@@ -26,9 +85,70 @@ namespace EducationalSystem.BLL
                     await context.SaveChangesAsync();
                 }
             }
+
+            if (!context.questionTypes.Any())
+            {
+                var questionTypesData = File.ReadAllText("../EducationalSystem.BLL/Seeding/QuestionTypes.json");
+                var questionTypes = JsonSerializer.Deserialize<List<QuestionType>>(questionTypesData);
+
+                foreach (var item in questionTypes)
+                {
+                    await context.Set<QuestionType>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            if (!context.Questions.Any())
+            {
+                var questionsData = File.ReadAllText("../EducationalSystem.BLL/Seeding/Questions.json");
+                var questions = JsonSerializer.Deserialize<List<Questions>>(questionsData);
+
+                foreach (var item in questions)
+                {
+                    await context.Set<Questions>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            if (!context.Choices.Any())
+            {
+                var choicesData = File.ReadAllText("../EducationalSystem.BLL/Seeding/Choices.json");
+                var choices = JsonSerializer.Deserialize<List<Choices>>(choicesData);
+
+                foreach (var item in choices)
+                {
+                    await context.Set<Choices>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            if (!context.Rubrics.Any())
+            {
+                var rubricsData = File.ReadAllText("../EducationalSystem.BLL/Seeding/Rubrics.json");
+                var rubrics = JsonSerializer.Deserialize<List<Rubrics>>(rubricsData);
+
+                foreach (var item in rubrics)
+                {
+                    await context.Set<Rubrics>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            if (!context.Discounts.Any())
+            {
+                var discountsData = File.ReadAllText("../EducationalSystem.BLL/Seeding/Discounts.json");
+                var discounts = JsonSerializer.Deserialize<List<Discounts>>(discountsData);
+
+                foreach (var item in discounts)
+                {
+                    await context.Set<Discounts>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
+
             if (!context.Instructors.Any())
             {
-            
+
                 var instructorsData = File.ReadAllText("../EducationalSystem.BLL/Seeding/Instructors.json");
                 var instructors = JsonSerializer.Deserialize<List<Instructors>>(instructorsData);
 
@@ -37,7 +157,55 @@ namespace EducationalSystem.BLL
                     await context.Set<Instructors>().AddAsync(item);
                     await context.SaveChangesAsync();
                 }
-            }   
+            }
+
+            if (!context.User_Instructor.Any())
+            {
+                var user_InstructorData = File.ReadAllText("../EducationalSystem.BLL/Seeding/User_Instructor.json");
+                var user_Instructor = JsonSerializer.Deserialize<List<User_Instructor>>(user_InstructorData);
+
+                foreach (var item in user_Instructor)
+                {
+                    await context.Set<User_Instructor>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            if (!context.Course_Enrollments.Any())
+            {
+                var course_EnrollmentsData = File.ReadAllText("../EducationalSystem.BLL/Seeding/Course_Enrollments.json");
+                var course_Enrollments = JsonSerializer.Deserialize<List<Course_Enrollments>>(course_EnrollmentsData);
+
+                foreach (var item in course_Enrollments)
+                {
+                    await context.Set<Course_Enrollments>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            if (!context.Course_Instructors.Any())
+            {
+                var course_InstructorsData = File.ReadAllText("../EducationalSystem.BLL/Seeding/Course_Instructors.json");
+                var course_Instructors = JsonSerializer.Deserialize<List<Course_Instructors>>(course_InstructorsData);
+
+                foreach (var item in course_Instructors)
+                {
+                    await context.Set<Course_Instructors>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
+
+            if (!context.Lesson_Prerequisites.Any())
+            {
+                var lesson_PrerequisitesData = File.ReadAllText("../EducationalSystem.BLL/Seeding/Lesson_Prerequisites.json");
+                var lesson_Prerequisites = JsonSerializer.Deserialize<List<Lesson_Prerequisites>>(lesson_PrerequisitesData);
+
+                foreach (var item in lesson_Prerequisites)
+                {
+                    await context.Set<Lesson_Prerequisites>().AddAsync(item);
+                    await context.SaveChangesAsync();
+                }
+            }
 
         }
 

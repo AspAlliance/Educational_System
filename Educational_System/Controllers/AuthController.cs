@@ -161,35 +161,6 @@ namespace EducationalSystem.Controllers
             return $"/uploads/{Path.GetFileName(filePath)}";
         }
 
-        [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto request)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest("Invalid payload");
-
-            try
-            {
-                var user = await userManager.FindByEmailAsync(request.Email);
-                if (user == null)
-                    return Ok(new { Message = "If the email exists, a reset link has been sent." });
-
-                var token = await userManager.GeneratePasswordResetTokenAsync(user);
-                if (string.IsNullOrEmpty(token))
-                    return BadRequest("Something went wrong");
-
-                var resetLink = $"http://localhost:27674//reset-password?token={token}&email={user.Email}";
-
-                // Send the reset link via email
-                await _emailService.SendResetPasswordEmail(request.Email, resetLink);
-
-                return Ok(new { Message = "If the email exists, a reset link has been sent." });
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (optional)
-                return StatusCode(500, "An unexpected error occurred.");
-            }
-        }
         [HttpPost(nameof(Login))]
         public async Task<IActionResult> Login(LoginBS userfromreq)
         {
@@ -238,6 +209,60 @@ namespace EducationalSystem.Controllers
 
             return BadRequest(ModelState);
         }
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid payload");
+
+            try
+            {
+                var user = await userManager.FindByEmailAsync(request.Email);
+                if (user == null)
+                    return Ok(new { Message = "If the email exists, a reset link has been sent." });
+
+                var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                if (string.IsNullOrEmpty(token))
+                    return BadRequest("Something went wrong");
+
+                var resetLink = $"http://localhost:27674/reset-password?token={token}&email={user.Email}";
+
+                // Send the reset link via email
+                await _emailService.SendResetPasswordEmail(request.Email, resetLink);
+
+                return Ok(new { Message = "If the email exists, a reset link has been sent." , token = token});
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional)
+                return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto request)
+        {
+            if (ModelState.IsValid)
+            {
+                // Find the user by email
+                var user = await userManager.FindByEmailAsync(request.Email);
+                if (user == null)
+                    return BadRequest("User not found");
+
+                // Verify the token
+                var result = await userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
+                if (!result.Succeeded)
+                    return BadRequest("Invalid or expired token");
+
+                return Ok(new
+                {
+                    Message = "Password reset successfully."
+                });
+            }
+
+            return BadRequest("Invalid payload");
+        }
+
 
         [HttpPost(nameof(ChangePassword))]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto changePasswordDto)

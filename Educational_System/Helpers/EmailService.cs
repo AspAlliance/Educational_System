@@ -55,5 +55,47 @@
                 await smtp.DisconnectAsync(true);
             }
         }
+        public async Task SendEmailConfirmationAsync(string toEmail, string confirmationLink)
+        {
+            var email = new MimeMessage();
+            email.From.Add(new MailboxAddress(
+                _configuration["EmailSettings:SenderName"],  // Sender's name
+                _configuration["EmailSettings:SenderEmail"]  // Sender's email address
+            ));
+            email.To.Add(new MailboxAddress("", toEmail)); // Recipient's email address
+            email.Subject = "Account Confirmation";
+
+            email.Body = new TextPart("html")
+            {
+                Text = $@"
+            <p>Hi,</p>
+            <p>Thank you for registering. Please confirm your email address by clicking the link below:</p>
+            <p><a href='{confirmationLink}'>Confirm Email Address</a></p>
+            <p>If you didn't register, please ignore this email.</p>
+            <p>Thanks,<br>Your App Team</p>
+        "
+            };
+
+            using var smtp = new SmtpClient();
+            try
+            {
+                // Connect using STARTTLS instead of SSL on port 587
+                await smtp.ConnectAsync(_configuration["EmailSettings:SmtpServer"],
+                                        int.Parse(_configuration["EmailSettings:Port"]),
+                                        SecureSocketOptions.StartTls);  // Use STARTTLS here
+
+                await smtp.AuthenticateAsync(
+                    _configuration["EmailSettings:Username"],
+                    _configuration["EmailSettings:Password"]
+                );
+
+                await smtp.SendAsync(email);
+            }
+            finally
+            {
+                await smtp.DisconnectAsync(true);
+            }
+        }
+
     }
 }

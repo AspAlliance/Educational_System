@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -49,7 +50,18 @@ namespace EducationalSystem.Controllers
 
                 if (result.Succeeded)
                 {
-                    return Ok("Create");
+                    // Generate email confirmation token
+                    var token = await userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
+                    if (string.IsNullOrEmpty(token))
+                        return BadRequest("Error generating email confirmation token.");
+
+                    // Create the email confirmation link manually
+                    var confirmationLink = $"http://localhost:27674/api/confirm-email?token={token}&email={applicationUser.Email}";
+
+                    // Send confirmation link via email
+                    await _emailService.SendEmailConfirmationAsync(register.Email, confirmationLink);
+
+                    return Ok(new { message = "User registered successfully. Please check your email to confirm your registration." , token = token});
                 }
 
                 foreach (var item in result.Errors)
@@ -59,6 +71,29 @@ namespace EducationalSystem.Controllers
             }
 
             return BadRequest(ModelState);
+        }
+
+        [HttpGet("confirm-email")]
+        public async Task<IActionResult> ConfirmEmail(string token, string email)
+        {
+            if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
+            {
+                return BadRequest("Invalid token or email.");
+            }
+
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            var result = await userManager.ConfirmEmailAsync(user, token);
+            if (result.Succeeded)
+            {
+                return Ok("Email confirmed successfully.");
+            }
+
+            return BadRequest("Error confirming email.");
         }
 
         [HttpPost(nameof(RegisterAsInstructor))]
@@ -302,7 +337,40 @@ namespace EducationalSystem.Controllers
             await signInManager.SignOutAsync();
             return Ok("Signed out succussfully");
         }
-        
+        [HttpDelete("delete-account")]
+        public async Task<IActionResult> DeleteAccount(LoginBS request)
+        {
+            if (string.IsNullOrEmpty(request.UserName) || string.IsNullOrEmpty(request.Password))
+            {
+                return BadRequest("Username and password are required.");
+            }
+
+            // Find the user by username
+            var user = await userManager.FindByNameAsync(request.UserName);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Check if the password is correct
+            var passwordValid = await userManager.CheckPasswordAsync(user, request.Password);
+            if (!passwordValid)
+            {
+                return Unauthorized("Invalid password.");
+            }
+
+            // Delete the user account
+            var result = await userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                return Ok("Account deleted successfully.");
+            }
+
+            // Return errors if deletion fails
+            return BadRequest("Error deleting the account.");
+        }
+
+
 
     }
 }

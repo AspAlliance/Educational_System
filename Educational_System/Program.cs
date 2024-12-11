@@ -18,6 +18,7 @@ namespace EducationalSystem
 
             // Add services to the container.
             builder.Services.AddControllers();
+            builder.Services.AddScoped<EmailService>();
 
             //Config To Enable Auto Mapper 
             builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));

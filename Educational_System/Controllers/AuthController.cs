@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Educational_System.Dto;
+using Educational_System.Helpers;
 using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.DAL.Models;
 using Microsoft.AspNetCore.Http;
@@ -21,8 +22,8 @@ namespace EducationalSystem.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly RoleManager<IdentityRole> roleManager; // Add RoleManager
-
-        public AuthController(
+        private readonly EmailService _emailService;
+        public AuthController(EmailService emailService,
             UserManager<ApplicationUser> userManager,
             IGenericRepository<Instructors> _repository,
             SignInManager<ApplicationUser> signInManager,
@@ -30,6 +31,7 @@ namespace EducationalSystem.Controllers
             RoleManager<IdentityRole> roleManager // Inject RoleManager
         )
         {
+            _emailService = emailService;
             _mapper = mapper;
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -159,7 +161,35 @@ namespace EducationalSystem.Controllers
             return $"/uploads/{Path.GetFileName(filePath)}";
         }
 
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid payload");
 
+            try
+            {
+                var user = await userManager.FindByEmailAsync(request.Email);
+                if (user == null)
+                    return Ok(new { Message = "If the email exists, a reset link has been sent." });
+
+                var token = await userManager.GeneratePasswordResetTokenAsync(user);
+                if (string.IsNullOrEmpty(token))
+                    return BadRequest("Something went wrong");
+
+                var resetLink = $"http://localhost:27674//reset-password?token={token}&email={user.Email}";
+
+                // Send the reset link via email
+                await _emailService.SendResetPasswordEmail(request.Email, resetLink);
+
+                return Ok(new { Message = "If the email exists, a reset link has been sent." });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional)
+                return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
         [HttpPost(nameof(Login))]
         public async Task<IActionResult> Login(LoginBS userfromreq)
         {
@@ -209,12 +239,45 @@ namespace EducationalSystem.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpPost(nameof(ChangePassword))]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Find the user by their username
+            var user = await userManager.FindByNameAsync(changePasswordDto.UserName);
+            if (user == null)
+            {
+                return NotFound(new { Message = "User not found" });
+            }
+
+            // Change the user's password
+            var result = await userManager.ChangePasswordAsync(user, changePasswordDto.CurrentPassword, changePasswordDto.NewPassword);
+
+            if (result.Succeeded)
+            {
+                return Ok(new { Message = "Password changed successfully" });
+            }
+
+            // Handle errors if password change fails
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return BadRequest(ModelState);
+        }
+
         [HttpPost(nameof(SignOut))]
         public async Task<IActionResult> SignOut()
         {
             await signInManager.SignOutAsync();
             return Ok("Signed out succussfully");
         }
+        
 
     }
 }

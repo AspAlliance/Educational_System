@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -369,8 +370,40 @@ namespace EducationalSystem.Controllers
             // Return errors if deletion fails
             return BadRequest("Error deleting the account.");
         }
+        [HttpPatch("update-instructor-status/{id}")]
+        public async Task<IActionResult> UpdateInstructorStatus(int id, [FromBody] UpdateStatusDto statusDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
+            // Check if the status value is valid
+            if (!Enum.IsDefined(typeof(InstructorStatus), statusDto.Status))
+            {
+                return BadRequest("Invalid status value. Valid values are 0 (Pending), 1 (Approved), 2 (Rejected).");
+            }
 
+            // Find the instructor by ID
+            var instructor = await _repository.GetByIdAsync(id);
+            if (instructor == null)
+            {
+                return NotFound(new { Message = "Instructor not found" });
+            }
 
+            // Update the status
+            instructor.Status = (InstructorStatus)statusDto.Status;
+
+            try
+            {
+                await _repository.UpdateAsync(instructor);
+                return Ok(new { Message = "Instructor status updated successfully", NewStatus = instructor.Status.ToString() });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (optional)
+                return StatusCode(500, new { Message = "An error occurred while updating the status", Details = ex.Message });
+            }
+        }
     }
 }

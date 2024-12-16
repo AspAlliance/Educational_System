@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EducationalSystem.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Initial_Database : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -259,7 +259,8 @@ namespace EducationalSystem.DAL.Migrations
                     NationalCardImageURL = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BIO = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     SpecializationsID = table.Column<int>(type: "int", nullable: true),
-                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

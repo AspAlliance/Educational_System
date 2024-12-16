@@ -40,5 +40,7 @@ namespace EducationalSystem.DAL.Models.Context
         public DbSet<Specializations> Specializations { get; set; }
         public DbSet<User_Instructor> User_Instructor { get; set; }
         public DbSet<SubLessons> SubLessons { get; set; }
+        public DbSet<Rubrics> Rubrics { get; set; }
+        public DbSet<Course_Instructors> Course_Instructors { get; set; }
     }
 }

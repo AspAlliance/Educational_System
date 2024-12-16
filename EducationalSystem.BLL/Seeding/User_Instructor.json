@@ -1,13 +1,22 @@
-{
-  "compilerOptions": {
-    "noImplicitAny": false,
-    "noEmitOnError": true,
-    "removeComments": false,
-    "sourceMap": true,
-    "target": "es5"
-  },
-  "exclude": [
-    "node_modules",
-    "wwwroot"
-  ]
-}
+[
+    {
+        "UserId": "57cf96cf-61d1-45b1-8f2f-4a64d0b83240",
+        "InstructorId": 1
+    },
+    {
+        "UserId": "64797df9-a3dd-48db-95df-7dae0ef08052",
+        "InstructorId": 2
+    },
+    {
+        "UserId": "6dcf18ae-33e9-4d56-b309-2f78f28c8b4b",
+        "InstructorId": 3
+    },
+    {
+        "UserId": "dd001a96-1685-4280-b53f-b4aaeb132eed",
+        "InstructorId": 4
+    },
+    {
+        "UserId": "e53a60e4-83c3-4efe-9eab-56377598ddf5",
+        "InstructorId": 1
+    }
+]

@@ -1,0 +1,42 @@
+[
+    {
+        "CourseID": 1,
+        "LessonTitle": "Math Lesson 1",
+        "Content": "Introduction to Algebra",
+        "LessonOrder": 1,
+        "CreatedDate": "2024-11-29T21:18:58",
+        "Description": "Basic Algebra",
+        "LessonDescription": "Learn the fundamentals of Algebra",
+        "SubLessonID": 1
+    },
+    {
+        "CourseID": 2,
+        "LessonTitle": "Physics Lesson 1",
+        "Content": "Introduction to Mechanics",
+        "LessonOrder": 1,
+        "CreatedDate": "2024-11-29T21:18:58",
+        "Description": "Basic Mechanics",
+        "LessonDescription": "Learn the basics of Newton's Laws",
+        "SubLessonID": 2
+    },
+    {
+        "CourseID": 3,
+        "LessonTitle": "CS Lesson 1",
+        "Content": "Introduction to Programming",
+        "LessonOrder": 1,
+        "CreatedDate": "2024-11-29T21:18:58",
+        "Description": "Basic Programming",
+        "LessonDescription": "Learn basic programming in Python",
+        "SubLessonID": 3
+    },
+    {
+        "CourseID": 2,
+        "LessonTitle": "Data Science Lesson 1",
+        "Content": "Introduction to Data Analysis",
+        "LessonOrder": 1,
+        "CreatedDate": "2024-11-29T21:18:58",
+        "Description": "Basic Data Science",
+        "LessonDescription": "Learn the basics of Data Science",
+        "SubLessonID": 4
+    }
+]

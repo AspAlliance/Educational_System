@@ -1,0 +1,22 @@
+[
+    {
+        "AssessmentID": 1,
+        "Criterion": "Understanding of algebraic expressions",
+        "MaxPoints": 10
+    },
+    {
+        "AssessmentID": 2,
+        "Criterion": "Understanding of Newton's laws",
+        "MaxPoints": 15
+    },
+    {
+        "AssessmentID": 3,
+        "Criterion": "Programming skills in Python",
+        "MaxPoints": 10
+    },
+    {
+        "AssessmentID": 4,
+        "Criterion": "Ability to analyze data",
+        "MaxPoints": 20
+    }
+]

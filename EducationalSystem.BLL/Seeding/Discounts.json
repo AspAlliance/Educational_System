@@ -1,0 +1,26 @@
+[
+    {
+        "CourseID": 1,
+        "DiscountValue": 10,
+        "StartDate": "2024-11-29T21:10:56.9233333",
+        "EndDate": "2024-12-09T21:10:56.9233333"
+    },
+    {
+        "CourseID": 2,
+        "DiscountValue": 15,
+        "StartDate": "2024-11-29T21:10:56.9233333",
+        "EndDate": "2024-12-14T21:10:56.9233333"
+    },
+    {
+        "CourseID": 3,
+        "DiscountValue": 20,
+        "StartDate": "2024-11-29T21:10:56.9233333",
+        "EndDate": "2024-12-19T21:10:56.9233333"
+    },
+    {
+        "CourseID": 4,
+        "DiscountValue": 25,
+        "StartDate": "2024-11-29T21:10:56.9233333",
+        "EndDate": "2024-12-24T21:10:56.9233333"
+    }
+]

@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
 using Educational_System.Dto;
+using Educational_System.Dto.Category;
 using EducationalSystem.DAL.Models;
 using System.Net;
 
 namespace Educational_System.Helpers
 {
-    public class MappingProfiles : Profile
+    public partial class MappingProfiles : Profile
     {
         public MappingProfiles()
         {
@@ -16,13 +17,12 @@ namespace Educational_System.Helpers
 
             CreateMap<Instructors, InstructorsDto>()
                 .ForMember(dest => dest.InstructorName, opt => opt.MapFrom(src => src.applicationUser.Name))
-                .ForMember(dest => dest.SpecializationsName, opt => opt.MapFrom(src => src.Specializations.SpecializationName)) 
+                .ForMember(dest => dest.SpecializationsName, opt => opt.MapFrom(src => src.Specializations.SpecializationName))
                 .ForMember(dest => dest.Courses, opt => opt.MapFrom(src => src.Course_Instructors.Select(ci => ci.Courses).ToList()))
-              //.ForMember(dest => dest.CourseTitles, opt => opt.MapFrom(src => src.Course_Instructors.Select(ci => ci.Courses.CourseTitle).ToList()))
+                //.ForMember(dest => dest.CourseTitles, opt => opt.MapFrom(src => src.Course_Instructors.Select(ci => ci.Courses.CourseTitle).ToList()))
                 .ReverseMap();
 
-
-
+            CreateCategoriesMappings();
         }
     }
 }

@@ -23,6 +23,8 @@ namespace Educational_System.Helpers
                 .ReverseMap();
 
             CreateCategoriesMappings();
+
+            CreateSpecializatiosMappings();
         }
     }
 }

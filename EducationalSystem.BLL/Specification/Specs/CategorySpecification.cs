@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace EducationalSystem.BLL.Specification.Specs
 {
-    public class CategorySpecification : ISpecification<Categories>
+    public class CategorySpecification : BaseSpecification<Categories>
     {
-        public IQueryable<Categories> Apply(IQueryable<Categories> query)
+        public override IQueryable<Categories> Apply(IQueryable<Categories> query)
         {
             return query.Include(c => c.Courses);
         }

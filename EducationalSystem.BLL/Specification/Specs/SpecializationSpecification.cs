@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace EducationalSystem.BLL.Specification.Specs
 {
-    public class SpecializationSpecification : ISpecification<Specializations>
+    public class SpecializationSpecification : BaseSpecification<Specializations>
     {
-        public IQueryable<Specializations> Apply(IQueryable<Specializations> query)
+        public override IQueryable<Specializations> Apply(IQueryable<Specializations> query)
         {
             return query.Include(s => s.Instructors).ThenInclude(i => i.applicationUser);
         }

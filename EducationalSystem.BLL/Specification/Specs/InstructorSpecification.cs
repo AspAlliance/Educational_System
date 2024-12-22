@@ -10,9 +10,9 @@ namespace EducationalSystem.BLL.Specification.Specs
 {
     //this should be class InstructorWithCoursesAndSpecializationsAndApplicationUserSpecification 
     //but to make it easier i named InstructorSpecification
-    public class InstructorSpecification : ISpecification<Instructors>
+    public class InstructorSpecification : BaseSpecification<Instructors>
     {
-        public IQueryable<Instructors> Apply(IQueryable<Instructors> query)
+        public override IQueryable<Instructors> Apply(IQueryable<Instructors> query)
         {
             return query.Include(i => i.applicationUser)
                     .Include(i => i.Course_Instructors)

@@ -25,6 +25,8 @@ namespace Educational_System.Helpers
             CreateCategoriesMappings();
 
             CreateSpecializatiosMappings();
+
+            CreateCourseMappings();
         }
     }
 }

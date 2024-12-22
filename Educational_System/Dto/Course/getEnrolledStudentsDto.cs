@@ -3,6 +3,7 @@
     public class StudentsCourse 
     {
         public string StudentName { get; set; }
+        public string StudentEmail { get; set; }
     }
 
     public class getEnrolledStudentsDto

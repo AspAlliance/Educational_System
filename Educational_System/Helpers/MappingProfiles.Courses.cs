@@ -55,7 +55,8 @@ namespace Educational_System.Helpers
 
                 .ForMember(dest => dest.Students, opt => opt.MapFrom(src => src.Course_Enrollments.Select(s => new StudentsCourse
                 {
-                    StudentName = s.User.Name
+                    StudentName = s.User.Name,
+                    StudentEmail = s.User.Email
                 }).ToList()));
         }
     }

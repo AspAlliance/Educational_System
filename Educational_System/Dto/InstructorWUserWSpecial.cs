@@ -1,24 +1,13 @@
-﻿using System.Text;
-
-namespace Educational_System.Dto
+﻿namespace EducationalSystem.BLL.Repositories.Interfaces
 {
     public class InstructorWUserWSpecial
     {
-        public string Insname { get; set; } // from userTable
+        public string Insname { get; set; } //  userTable
+        public string? ProfileImageURL { get; set; }// users table
         public string InsphoneNumber { get; set; } // instructors
-        public string InsNationalCardImg { get; set; }
-        public string CV_PDF_URL { get; set; }
-        public string BIO {  get; set; }
-
-        public string specialName { get; set; } // Specializations table
-
-
-        /*
-          public string PhoneNumber { get; set; }
-        public string CV_PDF_URL { get; set; }
-        public string NationalCardImageURL { get; set; }
-        public string BIO { get; set; }
-         */
-
+        public string InsNationalCardImg { get; set; } // instructors table
+        public string CV_PDF_URL { get; set; } // instructors table
+        public string BIO { get; set; } // instructors table
+        public string? specialName { get; set; } // Specializations table
     }
 }

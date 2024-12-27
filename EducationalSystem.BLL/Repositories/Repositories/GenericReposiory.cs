@@ -72,5 +72,16 @@ namespace EducationalSystem.BLL.Repositories.Repositories
             _dbContext.Entry(entity).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<Specializations> GetInstructorsBySpecializationIdAsync(int? instructorId)
+        {
+            return await _dbContext.Set<Instructors>()
+                .Where(i => i.ID == instructorId)
+                .Select(i => i.Specializations)
+                .FirstOrDefaultAsync();
+        }
+
+
+
     }
 }

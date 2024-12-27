@@ -13,6 +13,7 @@ using EducationalSystem.BLL.Specification.Specs;
 using Microsoft.CodeAnalysis.Elfie.Serialization;
 using InstructorWUserWSpecial = EducationalSystem.BLL.Repositories.Interfaces.InstructorWUserWSpecial;
 using System.IdentityModel.Tokens.Jwt;
+using EducationalSystem.BLL.Repositories.Repositories;
 
 namespace EducationalSystem.Controllers
 {
@@ -25,10 +26,10 @@ namespace EducationalSystem.Controllers
         private readonly IInstructorRepository _instructorRepository;
         private readonly IMapper _mapper;
         private readonly ILogger<InstructorController> logger;
-        private readonly ISpecializationsRepository _specializationsRepository;
+        private readonly IGenericRepository<Specializations> _specializationsRepository;
 
         public InstructorController(IInstructorRepository instructorRepository,
-            UserManager<ApplicationUser> userManager, IMapper mapper, ILogger<InstructorController> _logger, ISpecializationsRepository specializationsRepository)
+            UserManager<ApplicationUser> userManager, IMapper mapper, ILogger<InstructorController> _logger, IGenericRepository<Specializations> specializationsRepository)
         {
             _instructorRepository = instructorRepository;
             _userManager = userManager;

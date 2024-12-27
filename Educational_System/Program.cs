@@ -4,20 +4,43 @@ using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.BLL.Repositories.Repositories;
 using EducationalSystem.DAL.Models;
 using EducationalSystem.DAL.Models.Context;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Reflection;
 
 namespace EducationalSystem
 {
     public class Program
     {
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+       Host.CreateDefaultBuilder(args)
+           .ConfigureWebHostDefaults(webBuilder =>
+           {
+               webBuilder.UseStartup<Program>();
+           })
+           .UseSerilog(); // Use Serilog
+
         public static async Task Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()  // Set the minimum log level to Information
+            .WriteTo.Console()           // Log to console
+            .WriteTo.File("D:\\1 - DotNet\\DEPI ---SchollarShip\\12 - Projects\\4 - Learning_Platform_API\\Logger.txt",
+            rollingInterval: RollingInterval.Day) // Log to file
+            .CreateLogger();
+            
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllers();
+            //builder.Services.AddControllers();
+
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.AllowTrailingCommas = true;
+            });
 
             //Config To Enable Auto Mapper 
             builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
@@ -61,6 +84,7 @@ namespace EducationalSystem
             }
 
             builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
+            builder.Services.AddScoped<ISpecializationsRepository, SpecializationsRepository>();
 
             // Add Swagger for API documentation
             builder.Services.AddEndpointsApiExplorer();
@@ -88,6 +112,7 @@ namespace EducationalSystem
             app.Run();
         }
 
+        // Should Understand !!
         private static async Task RunSeedingAsync(IServiceProvider services)
         {
             var loggerFactory = services.GetRequiredService<ILoggerFactory>();

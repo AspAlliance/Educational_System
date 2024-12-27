@@ -34,7 +34,7 @@ namespace EducationalSystem.BLL.Repositories.Repositories
 
         public async Task<IQueryable<T>> GetAll()
         {
-            return (IQueryable<T>)_dbContext.Set<T>().AsNoTracking(); // Optimize for read-only query
+            return _dbContext.Set<T>().AsNoTracking();
         }
 
         public async Task<IQueryable<T>> GetAllWithSpec(ISpecification<T> specification = null)
@@ -48,7 +48,7 @@ namespace EducationalSystem.BLL.Repositories.Repositories
 
             return await Task.FromResult(query);
         }
-
+        
         public async Task<T> GetByIdAsync(int id)
         {
             return await _dbContext.Set<T>().FindAsync(id);

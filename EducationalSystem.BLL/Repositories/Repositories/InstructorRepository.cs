@@ -28,6 +28,12 @@ namespace EducationalSystem.BLL.Repositories.Repositories
             return users.AsEnumerable(); // Convert List to IEnumerable
         }
 
-
+        public async Task<ApplicationUser?> GetInstructorUserByIdAsync(int instructorId)
+        {
+            return await _dbContext.Set<Instructors>()
+           .Where(i => i.ID == instructorId)
+           .Select(i => i.applicationUser)
+           .FirstOrDefaultAsync();
+        }
     }
 }

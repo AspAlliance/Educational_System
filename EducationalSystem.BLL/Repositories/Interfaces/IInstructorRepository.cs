@@ -13,6 +13,7 @@ namespace EducationalSystem.BLL.Repositories.Interfaces
         //Task<InstructorWUserWSpecial?> GetSpecializationByInstructorIdAsync(int instructorId);
 
         Task<ApplicationUser?> GetInstructorUserByIdAsync(int instructorId);
+        Task<Specializations> GetInstructorsBySpecializationIdAsync(int? instructorId);
 
     }
 }

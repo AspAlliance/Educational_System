@@ -23,8 +23,7 @@ namespace EducationalSystem.BLL.Repositories.Interfaces
         Task<IQueryable<T>> GetAllWithSpec(ISpecification<T> specification = null);
 
         Task<T> GetByIdWithSpecAsync(int id, ISpecification<T> specification = null);
-
-        Task<Specializations> GetInstructorsBySpecializationIdAsync(int? instructorId);
+        
 
 
     }

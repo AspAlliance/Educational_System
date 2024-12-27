@@ -83,7 +83,7 @@ namespace EducationalSystem.Controllers
             if (userFromDb == null)
                 return NotFound($"user with instructor id {id} not found");
 
-            Specializations userSpecialization = await _specializationsRepository.GetInstructorsBySpecializationIdAsync(instructor.SpecializationsID);
+            Specializations userSpecialization = await _instructorRepository.GetInstructorsBySpecializationIdAsync(instructor.SpecializationsID);
             if (userSpecialization == null)
                 return NotFound($"Specialization for instructor ID {id} not found.");
 
@@ -179,7 +179,7 @@ namespace EducationalSystem.Controllers
             if (instructorFromDb == null)
                 return NotFound($"Instructor with id {id} not found");
 
-            Specializations specialization = await _specializationsRepository.GetInstructorsBySpecializationIdAsync(instructorFromDb.SpecializationsID);
+            Specializations specialization = await _instructorRepository.GetInstructorsBySpecializationIdAsync(instructorFromDb.SpecializationsID);
             // Get specilaztion based on instructor id
 
             if (specialization == null)

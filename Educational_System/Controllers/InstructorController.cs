@@ -102,41 +102,50 @@ namespace EducationalSystem.Controllers
 
         // Check it ??!! 
         // Add New Instructor
-        [HttpPost]
-        public async Task<IActionResult> Add([FromBody] Instructors instructorFromRequest)
-        {
+        //[HttpPost]
+        //public async Task<IActionResult> Add([FromBody] Instructors instructorFromRequest)
+        //{
             
-            if (instructorFromRequest == null)
-            {
-                logger.LogWarning("Instructor data is missing.");
-                return BadRequest("Instructor data is required.");
-            }
-            if (!ModelState.IsValid)
-            {
-                logger.LogWarning("Model state is invalid for the provided instructor.");
-                return BadRequest(ModelState); // Return validation errors
-            }
-            try
-            {
-                await _instructorRepository.AddAsync(instructorFromRequest);
-                logger.LogInformation($"Instructor with ID {instructorFromRequest.ID} added successfully.", instructorFromRequest.ID);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, $"An error occurred while adding instructor with ID {instructorFromRequest.ID}.",
-                    instructorFromRequest.ID);
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-            //return Ok(instructorFromRequest);
-            // Return 201 Created 
-            return CreatedAtAction(
-               nameof(GetInstructorById), // Action that retrieves the created resource
-               new { id = instructorFromRequest.ID }, // Route values
-               instructorFromRequest // The response body
-                );
-        }
+        //    if (instructorFromRequest == null)
+        //    {
+        //        logger.LogWarning("Instructor data is missing.");
+        //        return BadRequest("Instructor data is required.");
+        //    }
+        //    if (!ModelState.IsValid)
+        //    {
+        //        logger.LogWarning("Model state is invalid for the provided instructor.");
+        //        return BadRequest(ModelState); // Return validation errors
+        //    }
+        //    try
+        //    {
+        //        await _instructorRepository.AddAsync(instructorFromRequest);
+        //        logger.LogInformation($"Instructor with ID {instructorFromRequest.ID} added successfully.", instructorFromRequest.ID);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.LogError(ex, $"An error occurred while adding instructor with ID {instructorFromRequest.ID}.",
+        //            instructorFromRequest.ID);
+        //        return StatusCode(500, $"Internal server error: {ex.Message}");
+        //    }
+        //    //return Ok(instructorFromRequest);
+        //    // Return 201 Created 
+        //    return CreatedAtAction(
+        //       nameof(GetInstructorById), // Action that retrieves the created resource
+        //       new { id = instructorFromRequest.ID }, // Route values
+        //       instructorFromRequest // The response body
+        //        );
+        //}
+
+
+
+
 
         // Edit page
+        
+        
+        
+        
+        
         [HttpGet("{id}/Edit")]
         public async Task<IActionResult> Edit(int id)
         {

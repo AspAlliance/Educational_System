@@ -242,14 +242,14 @@ namespace EducationalSystem.Controllers
 
 
         // GetInstructorInfoByCrsID
-        [HttpGet("Course_Instructors ")]
+        [HttpGet("Course_Instructors")]
         public async Task<IActionResult> GetInstructorByCrsId(int crsId)
         {
             // DTO between Course and Instructor
             var instructors = await _instructorRepository.GetInstructorsByCrsID(crsId);
-            if (instructors == null)
-                return NotFound($"Course with id {crsId} not found");
-            
+            if (instructors == null || !instructors.Any())
+                return NotFound($"No instructors found for course with id {crsId}");
+
             List<InstructorNamesDTO> instructorsListDTOs = new List<InstructorNamesDTO>();
             
             foreach (var instructor in instructors)
@@ -261,13 +261,13 @@ namespace EducationalSystem.Controllers
                 var crsName = await _instructorRepository.GetCrsByIdAsync(crsId);
                 instructorsListDTOs.Add(new InstructorNamesDTO
                 {
-                    instructorName = user.Name, //
+                    instructorName = user.Name ?? "Name not available", //
                     PhoneNumber = instructor.PhoneNumber,
                     CV_PDF_URL = instructor.CV_PDF_URL,
-                    ProfileImageURL = user.ProfileImageURL,
+                    ProfileImageURL = user?.ProfileImageURL,
                     BIO = instructor.BIO,
-                    SpecilaztionName = userSpecialization.SpecializationName,
-                    CrsName = crsName.CourseTitle,
+                    SpecilaztionName = userSpecialization.SpecializationName ?? "Specialization not available",
+                    CrsName = crsName.CourseTitle ?? "Course not available",
                 });
             }
             if (instructorsListDTOs == null)

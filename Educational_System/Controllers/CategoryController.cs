@@ -7,5 +7,6 @@ namespace EducationalSystem.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
+
     }
 }

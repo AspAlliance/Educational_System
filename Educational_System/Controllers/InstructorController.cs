@@ -144,8 +144,6 @@ namespace EducationalSystem.Controllers
         
         
         
-        
-        
         [HttpGet("{id}/Edit")]
         public async Task<IActionResult> Edit(int id)
         {
@@ -242,6 +240,40 @@ namespace EducationalSystem.Controllers
             }
         }
 
+
+        // GetInstructorInfoByCrsID
+        [HttpGet("Course_Instructors ")]
+        public async Task<IActionResult> GetInstructorByCrsId(int crsId)
+        {
+            // DTO between Course and Instructor
+            var instructors = await _instructorRepository.GetInstructorsByCrsID(crsId);
+            if (instructors == null)
+                return NotFound($"Course with id {crsId} not found");
+            
+            List<InstructorNamesDTO> instructorsListDTOs = new List<InstructorNamesDTO>();
+            
+            foreach (var instructor in instructors)
+            {
+                var user = await _instructorRepository.GetInstructorUserByIdAsync(instructor.ID);
+                var userSpecialization = await _instructorRepository
+                    .GetInstructorsBySpecializationIdAsync(instructor.SpecializationsID);
+
+                var crsName = await _instructorRepository.GetCrsByIdAsync(crsId);
+                instructorsListDTOs.Add(new InstructorNamesDTO
+                {
+                    instructorName = user.Name, //
+                    PhoneNumber = instructor.PhoneNumber,
+                    CV_PDF_URL = instructor.CV_PDF_URL,
+                    ProfileImageURL = user.ProfileImageURL,
+                    BIO = instructor.BIO,
+                    SpecilaztionName = userSpecialization.SpecializationName,
+                    CrsName = crsName.CourseTitle,
+                });
+            }
+            if (instructorsListDTOs == null)
+                return NotFound("not found");
+            return Ok(instructorsListDTOs);
+        }
 
     }
 }

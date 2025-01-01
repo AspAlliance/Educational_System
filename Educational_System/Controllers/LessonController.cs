@@ -7,5 +7,13 @@ namespace EducationalSystem.Controllers
     [ApiController]
     public class LessonController : ControllerBase
     {
+        // DO it
+
+
+
+
+
+        
+
     }
 }

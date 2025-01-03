@@ -12,19 +12,13 @@ namespace EducationalSystem.BLL.Repositories.Interfaces
     public interface IGenericRepository<T> where T : BaseEntity
     {
         Task<IQueryable<T>> GetAll();
-
         Task<T> GetByIdAsync(int id);
-
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
-
         Task DeleteAsync(T entity);
-
         Task<IQueryable<T>> GetAllWithSpec(ISpecification<T> specification = null);
-
         Task<T> GetByIdWithSpecAsync(int id, ISpecification<T> specification = null);
         
-
 
     }
 }

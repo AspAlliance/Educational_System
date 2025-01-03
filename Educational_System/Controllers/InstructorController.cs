@@ -143,7 +143,6 @@ namespace EducationalSystem.Controllers
         // Edit page
         
         
-        
         [HttpGet("{id}/Edit")]
         public async Task<IActionResult> Edit(int id)
         {
@@ -270,6 +269,7 @@ namespace EducationalSystem.Controllers
                     CrsName = crsName.CourseTitle ?? "Course not available",
                 });
             }
+
             if (instructorsListDTOs == null)
                 return NotFound("not found");
             return Ok(instructorsListDTOs);

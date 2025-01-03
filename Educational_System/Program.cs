@@ -84,7 +84,8 @@ namespace EducationalSystem
             }
 
             builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
-            
+            builder.Services.AddScoped<ILessonRepository, LessonRepository>();
+
             // Add Swagger for API documentation
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

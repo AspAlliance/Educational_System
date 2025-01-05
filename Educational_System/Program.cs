@@ -63,6 +63,8 @@ namespace EducationalSystem
 
             builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+            builder.Services.AddScoped<ILessonRepository, LessonRepository>();
+            builder.Services.AddScoped<ISubLessonRepository, SubLessonRepository>();
 
 
             // Add Swagger for API documentation
@@ -102,7 +104,7 @@ namespace EducationalSystem
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-                await dbContext.Database.MigrateAsync();
+                //await dbContext.Database.MigrateAsync();
                 await Education_System_Seeding.SeedUsersAndRolesAsync(userManager, roleManager);
                 await Education_System_Seeding.SeedAsync(dbContext);
 

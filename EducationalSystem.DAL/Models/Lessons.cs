@@ -6,7 +6,7 @@
         public string LessonTitle { get; set; }
         public string Content { get; set; }
         public int LessonOrder { get; set; }
-        public DateTime? CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; } = DateTime.Now;
         public int SubLessonID { get; set; } // Foreign key for Courses
         public string LessonDescription { get; set; }
 

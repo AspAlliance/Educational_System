@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationalSystem.DAL.Migrations
 {
     [DbContext(typeof(Education_System))]
-    [Migration("20241202193024_init")]
-    partial class init
+    [Migration("20241216185108_Initial_Database")]
+    partial class Initial_Database
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -436,6 +436,9 @@ namespace EducationalSystem.DAL.Migrations
 
                     b.Property<int?>("SpecializationsID")
                         .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserID")
                         .IsRequired()

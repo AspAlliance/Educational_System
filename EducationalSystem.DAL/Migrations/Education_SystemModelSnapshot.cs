@@ -434,6 +434,9 @@ namespace EducationalSystem.DAL.Migrations
                     b.Property<int?>("SpecializationsID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");

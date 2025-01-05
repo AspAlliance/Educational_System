@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Educational_System.Dto;
 using Educational_System.Dto.Category;
 using Educational_System.Dto.Choices; // Added namespace for Choices DTOs

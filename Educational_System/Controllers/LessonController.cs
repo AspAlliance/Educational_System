@@ -11,7 +11,6 @@ namespace EducationalSystem.Controllers
     [ApiController]
     public class LessonController : ControllerBase
     {
-        // DO it
         private readonly IGenericRepository<Lessons> _genericRepositoryLesson;
         private readonly IGenericRepository<Courses> _genericRepositoryCourse;
         private readonly IGenericRepository<SubLessons> _genericRepositorySubLesson;

@@ -4,6 +4,7 @@
     {
         public string LessonTitle { get; set; }
         public string Content { get; set; }
+        public int lessonOrder { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string LessonDescription { get; set; }
 

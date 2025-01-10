@@ -20,6 +20,7 @@ namespace EducationalSystem.BLL.Repositories.Repositories
             _dbContext = dbcontext;
         }
 
+        
         public async Task<List<Comments>> GetAllCommentsByLessonId(int lessonId)
         {
             var comments = await _dbContext.Comments
@@ -29,14 +30,34 @@ namespace EducationalSystem.BLL.Repositories.Repositories
             return comments;
         }
 
+        public async Task<List<Lesson_Prerequisites>> GetLessonPrerequisitesByIdAsync(int lessonId)
+        {
+            var LessonPrerequisites = await _dbContext.Lesson_Prerequisites
+                .Where(lp => lp.CurrentLessonID == lessonId)
+                .ToListAsync();
+
+            return LessonPrerequisites;
+        }
+
         public async Task<List<Lessons>> GetLessonsByCrsIdAsync(int crsId)
         {
-            
             var lessons = await _dbContext.Lessons
                 .Where(l => l.CourseID == crsId)
                 .ToListAsync();
            
             return lessons;
         }
+
+        public async Task<List<Lessons>> GetLessonsBySubLessonIdAsync(int subLessonId)
+        {
+            var lessons = await _dbContext.Lessons
+                 .Where(l => l.SubLessonID == subLessonId)
+                 .ToListAsync();
+
+            return lessons;
+        }
+
+        
+
     }
 }

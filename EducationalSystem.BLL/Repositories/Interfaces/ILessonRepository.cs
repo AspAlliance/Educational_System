@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using EducationalSystem.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EducationalSystem.BLL.Repositories.Interfaces
 {
@@ -11,5 +12,8 @@ namespace EducationalSystem.BLL.Repositories.Interfaces
     {
         Task<List<Lessons>> GetLessonsByCrsIdAsync(int crsId);
         Task<List<Comments>> GetAllCommentsByLessonId(int lessonId);
+        Task <List<Lessons>> GetLessonsBySubLessonIdAsync(int subLessonId);
+        Task<List<Lesson_Prerequisites>> GetLessonPrerequisitesByIdAsync(int lessonId);
+
     }
 }

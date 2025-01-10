@@ -206,7 +206,7 @@ namespace EducationalSystem.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"An error occurred while deleting the lesson ID {id}: {ex.Message}");
+                return BadRequest($"An error occurred while deleting the lesson ID {id}");
             }
             return NoContent();
         }

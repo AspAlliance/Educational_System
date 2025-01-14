@@ -20,7 +20,15 @@ namespace EducationalSystem.BLL.Repositories.Repositories
             _dbContext = dbcontext;
         }
 
-        
+        public async Task<Lesson_Completions> existingCompletion(string userId, int lessonId)
+        {
+            var existingCompletion = await _dbContext.Lesson_Completions
+            .FirstOrDefaultAsync(lc => lc.UserID == userId && lc.LessonID == lessonId);
+            return existingCompletion;
+        }
+
+
+
         public async Task<List<Comments>> GetAllCommentsByLessonId(int lessonId)
         {
             var comments = await _dbContext.Comments
@@ -28,6 +36,27 @@ namespace EducationalSystem.BLL.Repositories.Repositories
                 .ToListAsync();
 
             return comments;
+        }
+
+        public async Task<List<Lessons>> GetLessonsOrderedByPrerequisiteCompletion(int subLessonId, string userId)
+        {
+            // Fetch lessons for the specific subLessonId
+            var lessons = await _dbContext.Lessons
+                .Where(l => l.SubLessonID == subLessonId)
+                .ToListAsync();
+
+            var completedLessons = await _dbContext.Lesson_Completions
+                .Where(lc => lc.UserID == userId && lc.Lessons.SubLessonID == subLessonId)
+                .Select(lc => lc.Lessons) 
+                .ToListAsync();
+
+            //// Order lessons by the count of prerequisites completed
+            //var orderLessons = lessons
+            //    .OrderBy(l => l.PrerequisiteLessonPrerequisites.Count == 0 ? 0 : l.PrerequisiteLessonPrerequisites.Count(p => completedLessonsIds.Contains(p.PrerequisiteLessonID)))
+            //    .ThenBy(l => l.ID)
+            //    .ToList();
+
+            return completedLessons;
         }
 
         public async Task<List<Lesson_Prerequisites>> GetLessonPrerequisitesByIdAsync(int lessonId)

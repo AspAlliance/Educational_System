@@ -15,6 +15,8 @@ namespace EducationalSystem.BLL.Repositories.Interfaces
         Task <List<Lessons>> GetLessonsBySubLessonIdAsync(int subLessonId);
         Task<List<Lesson_Prerequisites>> GetLessonPrerequisitesByIdAsync(int lessonId);
         Task<List<Lessons>> GetLessonsByIdsAsync (List<int> lessonsIds);
+        Task<Lesson_Completions> existingCompletion(string userId, int lessonId);
+        Task<List<Lessons>> GetLessonsOrderedByPrerequisiteCompletion(int subLessonId, string userId);
 
     }
 }

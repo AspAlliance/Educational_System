@@ -15,18 +15,22 @@ namespace EducationalSystem.Controllers
         private readonly IGenericRepository<Courses> _genericRepositoryCourse;
         private readonly IGenericRepository<SubLessons> _genericRepositorySubLesson;
         private readonly IGenericRepository<Lesson_Prerequisites> _genericlessonPrerequisites;
+        private readonly IGenericRepository<Lesson_Completions> _genericlessonCompletions;
 
         private readonly ILessonRepository _lessonRepository;
-        public LessonController(IGenericRepository<Lessons> genericRepository, ILessonRepository lessonRepository, 
+        public LessonController(IGenericRepository<Lessons> genericRepository,
+            ILessonRepository lessonRepository, 
             IGenericRepository<Courses> genericRepositoryCourse, 
             IGenericRepository<SubLessons> genericRepositorySubLesson,
-            IGenericRepository<Lesson_Prerequisites> lessonPrerequisites)
+            IGenericRepository<Lesson_Prerequisites> lessonPrerequisites,
+            IGenericRepository<Lesson_Completions> genericlessonCompletions)
         {
             _genericRepositoryLesson = genericRepository;
             _lessonRepository = lessonRepository;
             _genericRepositoryCourse = genericRepositoryCourse;
             _genericRepositorySubLesson = genericRepositorySubLesson;
             _genericlessonPrerequisites = lessonPrerequisites;
+            _genericlessonCompletions = genericlessonCompletions;
         }
 
         // 1. Add Lesson to Sublesson ()
@@ -72,7 +76,7 @@ namespace EducationalSystem.Controllers
             }
         } // DTO For lesson to make the end user cannot see the structure of the lesson Table
 
-        // 2. Get All Lessons by Sublesson (Done)
+        // 2. Get All Lessons by Sublesson 
         [HttpGet("sublessons/{subLessonId}/lessons")]
         public async Task<IActionResult> GetAllBySublesson(int subLessonId)
         {
@@ -122,7 +126,7 @@ namespace EducationalSystem.Controllers
         }
 
         // Get Lesson & crsName & lessonComments by lessonId
-        // 3. Get Specific Lesson (Done)
+        // 3. Get Specific Lesson 
         [HttpGet("lessons/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -152,7 +156,7 @@ namespace EducationalSystem.Controllers
         }
 
         // Edit Lesson --> lessonDTO 
-        // 4. Update Lesson (Done)
+        // 4. Update Lesson 
         [HttpPut("lessons/{id}")]
         public async Task<IActionResult> Edit(int id, LessonDTO lessonFromRequst)
         {
@@ -259,36 +263,111 @@ namespace EducationalSystem.Controllers
                 );
         }
 
-
         // 7. Get Lesson Prerequisites
         [HttpGet("lessons/{lessonId}/prerequisites")]
         public async Task<IActionResult> GetLessonPrerequisites(int lessonId)
         {
-            var lessonPrerequisites = await _lessonRepository.GetLessonPrerequisitesByIdAsync(lessonId);
-            // list of Lesson_Prerequisites
+            try
+            {
+                var lessonPrerequisites = await _lessonRepository.GetLessonPrerequisitesByIdAsync(lessonId);
+                // list of Lesson_Prerequisites
+                if (lessonPrerequisites.Count == 0)
+                {
+                    return NotFound("there is no prerequisites for this lesson.");
+                }
+                var prerequisiteIds = lessonPrerequisites.Select(lp => lp.PrerequisiteLessonID).ToList();
+                // list of ints of PrerequisiteLessonIDs
 
-            var prerequisiteIds = lessonPrerequisites.Select(lp => lp.PrerequisiteLessonID).ToList();
-            // list of ints of PrerequisiteLessonID
+                var lessons = await _lessonRepository.GetLessonsByIdsAsync(prerequisiteIds);
 
-            var lessons = await _lessonRepository.GetLessonsByIdsAsync(prerequisiteIds);
+                var lessonsDTOs = lessons
+                    .Where(lesson => lesson != null)
+                    .Select(lesson => new lessonPrerequisiteDTO
+                    {
+                        LessonTitle = lesson.LessonTitle,
+                        lessonOrder = lesson.LessonOrder,
+                    })
+                    .ToList();
 
-            var lessonsDTOs = lessons
-                .Where(lesson => lesson != null)
-                .Select(lesson => new lessonPrerequisiteDTO
+                return Ok(lessonsDTOs);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "an error occcured while processing your requiest.");
+            }
+        }
+
+        // 8. Mark Lesson as Completed
+        [HttpPost("lessons/{lessonId}/complete")]
+        public async Task<IActionResult> LessonCompleted(/*string userId, */int lessonId)
+        {
+            var userId = HttpContext.Request.Cookies["UserID"];
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User not authonticated.");
+            }
+            var existingCompletion = await _lessonRepository.existingCompletion(userId, lessonId);
+            // get Completed lessons for student from the DB
+            if (existingCompletion != null)
+            {
+                return Conflict("Lesson already marked as completed.");
+            }
+            var lesson = _lessonRepository.GetByIdAsync(lessonId);
+            if (lesson == null)
+            {
+                return Conflict("No lessons found.");
+            }
+            var lessonCompletion = new Lesson_Completions
+            {
+                UserID = userId,
+                LessonID = lessonId,
+                CompletionDate = DateTime.UtcNow,
+            };
+
+           await _genericlessonCompletions.AddAsync(lessonCompletion);
+
+            return CreatedAtAction(
+               nameof(GetById),
+               new { id = lessonId },
+               lessonCompletion
+               );
+        }
+
+        // 9. Check Prerequisite Completion Before Entering Lesson --> not nessecary.
+
+        // 10. Get Lessons Ordered by Prerequisite Completion
+        [HttpGet("sublessons/{subLessonId}/lessons/ordered")]
+        public async Task<IActionResult> GetLessonsOrdereByPrereqCompletion(/*string userId,*/ int subLessonId)
+        {
+            var lessons = await _lessonRepository.GetLessonsBySubLessonIdAsync(subLessonId);
+
+            var userId = HttpContext.Request.Cookies["UserID"];
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User not authonticated.");
+            }
+
+            var completedLessons = await _lessonRepository.GetLessonsOrderedByPrerequisiteCompletion(subLessonId, userId);
+            if (completedLessons == null || !completedLessons.Any())
+            {
+                return NotFound("No lessons completed for the given sublesson.");
+            }
+
+            List<lessonPrerequisiteDTO> lessonsDTOs = new List<lessonPrerequisiteDTO>();
+            foreach (var lesson in completedLessons)
+            {
+                lessonsDTOs.Add(new lessonPrerequisiteDTO
                 {
                     LessonTitle = lesson.LessonTitle,
-                    lessonOrder = lesson.LessonOrder,
-                })
-                .ToList();
+                    lessonOrder = lesson.LessonOrder
+                });
+            }
 
             return Ok(lessonsDTOs);
         }
 
-
-
-
-        // Get All Lessons by CrsId with LessonDTO --> return comments in every lesson (:
-        [HttpGet]
+        // 11. Get All Lessons by crsId
+        [HttpGet("courses/{crsId}/lessons")]
         public async Task<IActionResult> GetAllByCrsId(int crsId)
         {
             try
@@ -314,7 +393,7 @@ namespace EducationalSystem.Controllers
                 foreach (var lesson in lessons)
                 {
                     var comments = await _lessonRepository.GetAllCommentsByLessonId(lesson.ID) ?? new List<Comments>();
-                
+
                     lessonsListDTO.Add(new LessonCourseCommentDTO
                     {
                         crsName = crsName,
@@ -325,7 +404,7 @@ namespace EducationalSystem.Controllers
                         comments = comments,
                     });
                 }
-            return Ok(lessonsListDTO);
+                return Ok(lessonsListDTO);
             }
 
             // this function return all lossons by crsId and return the commetns on the course and crsName 
@@ -335,6 +414,13 @@ namespace EducationalSystem.Controllers
                 return StatusCode(500, $"an error occurred while processing your request, {ex.Message}");
             }
         }
+
+        // may be i Will do -->
+        // Optionally, trigger unlocking of prerequisite lessons (e.g., checking prerequisites)
+        // await UnlockPrerequisitesForStudent(userId, lessonId);
+        // private async Task UnlockPrerequisitesForStudent(string userId, int lessonId)
+
+        // Get All Lessons by CrsId with LessonDTO --> return comments in every lesson (:
 
 
     }

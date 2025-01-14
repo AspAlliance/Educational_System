@@ -14,6 +14,7 @@ namespace EducationalSystem.BLL.Repositories.Interfaces
         Task<List<Comments>> GetAllCommentsByLessonId(int lessonId);
         Task <List<Lessons>> GetLessonsBySubLessonIdAsync(int subLessonId);
         Task<List<Lesson_Prerequisites>> GetLessonPrerequisitesByIdAsync(int lessonId);
+        Task<List<Lessons>> GetLessonsByIdsAsync (List<int> lessonsIds);
 
     }
 }

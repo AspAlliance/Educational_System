@@ -211,7 +211,7 @@ namespace EducationalSystem.Controllers
         }
 
         // 6. Add Prerequisite to Lesson
-        [HttpPost("/lessons/{lessonId}/prerequisites")]
+        [HttpPost("lessons/{lessonId}/prerequisites")]
         public async Task<IActionResult> AddPrerequisite(int lessonId, [FromBody] AddPrerequisiteDto prerequisiteDto)
         {
             var lesson = await _lessonRepository.GetByIdAsync(lessonId);
@@ -259,6 +259,30 @@ namespace EducationalSystem.Controllers
                 );
         }
 
+
+        // 7. Get Lesson Prerequisites
+        [HttpGet("lessons/{lessonId}/prerequisites")]
+        public async Task<IActionResult> GetLessonPrerequisites(int lessonId)
+        {
+            var lessonPrerequisites = await _lessonRepository.GetLessonPrerequisitesByIdAsync(lessonId);
+            // list of Lesson_Prerequisites
+
+            var prerequisiteIds = lessonPrerequisites.Select(lp => lp.PrerequisiteLessonID).ToList();
+            // list of ints of PrerequisiteLessonID
+
+            var lessons = await _lessonRepository.GetLessonsByIdsAsync(prerequisiteIds);
+
+            var lessonsDTOs = lessons
+                .Where(lesson => lesson != null)
+                .Select(lesson => new lessonPrerequisiteDTO
+                {
+                    LessonTitle = lesson.LessonTitle,
+                    lessonOrder = lesson.LessonOrder,
+                })
+                .ToList();
+
+            return Ok(lessonsDTOs);
+        }
 
 
 

@@ -48,6 +48,13 @@ namespace EducationalSystem.BLL.Repositories.Repositories
             return lessons;
         }
 
+        public Task<List<Lessons>> GetLessonsByIdsAsync(List<int> lessonsIds)
+        {
+            var lessons = _dbContext.Lessons.Where(l => lessonsIds.Contains(l.ID))
+                .ToListAsync();
+            return lessons;
+        }
+
         public async Task<List<Lessons>> GetLessonsBySubLessonIdAsync(int subLessonId)
         {
             var lessons = await _dbContext.Lessons

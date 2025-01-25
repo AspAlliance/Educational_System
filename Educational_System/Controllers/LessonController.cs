@@ -238,6 +238,8 @@ namespace EducationalSystem.Controllers
                     return Conflict(new { error = "Prerequisite already exists for this lesson." });
                 }
             }
+           
+
             if (prerequisiteLesson == null)
             {
                 return BadRequest(new { error = "Invalid prerequisite lesson ID." });

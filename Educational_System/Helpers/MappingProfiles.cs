@@ -22,7 +22,7 @@ namespace Educational_System.Helpers
                 .ReverseMap();
 
 
-
+            CreateMap<TextSubmissions, TextSubmissionDTO>().ReverseMap();
         }
     }
 }

@@ -16,8 +16,8 @@ namespace EducationalSystem.Controllers
         private readonly IGenericRepository<SubLessons> _genericRepositorySubLesson;
         private readonly IGenericRepository<Lesson_Prerequisites> _genericlessonPrerequisites;
         private readonly IGenericRepository<Lesson_Completions> _genericlessonCompletions;
-
         private readonly ILessonRepository _lessonRepository;
+
         public LessonController(IGenericRepository<Lessons> genericRepository,
             ILessonRepository lessonRepository, 
             IGenericRepository<Courses> genericRepositoryCourse, 

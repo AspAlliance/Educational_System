@@ -6,6 +6,7 @@ using EducationalSystem.DAL.Models;
 using EducationalSystem.DAL.Models.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using System.Reflection;
 
 namespace EducationalSystem
@@ -14,24 +15,46 @@ namespace EducationalSystem
     {
         public static async Task Main(string[] args)
         {
+            // Removed invalid 'using Serilog;' statement causing errors.
+
+            Log.Logger = new LoggerConfiguration()
+           .MinimumLevel.Information()
+           .WriteTo.Console()
+           .WriteTo.File("Logs/myapp.txt", rollingInterval: RollingInterval.Day)
+           .CreateLogger();
+
             var builder = WebApplication.CreateBuilder(args);
 
+            // Replace the default logger with Serilog
+            builder.Host.UseSerilog();
             // Add services to the container.
             builder.Services.AddControllers();
             builder.Services.AddScoped<EmailService>();
 
-            //Config To Enable Auto Mapper 
+            // Auto Mapper
             builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
-            // Add DbContext with the MigrationsAssembly
+
+            // DbContext with migration assembly
             builder.Services.AddDbContext<Education_System>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DB1"),
-                    b => b.MigrationsAssembly("EducationalSystem.DAL")));  // Specify the migrations assembly here
+                    b => b.MigrationsAssembly("EducationalSystem.DAL")));
 
-            // Register Identity services
+
+
+            // AddMemoryCache registers a memory cache service for quick data access.
+            builder.Services.AddMemoryCache();
+
+            // AddDistributedMemoryCache registers a distributed memory cache service for caching data across multiple instances.
+            //builder.Services.AddStackExchangeRedisCache(options =>
+            //{
+            //    options.Configuration = "localhost:6379"; // Assuming Redis is running locally
+            //});
+
+
+
+            // Identity config
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
-                //options.SignIn.RequireConfirmedAccount = true;
-                // Password settings.
                 options.Password.RequireDigit = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireNonAlphanumeric = false;
@@ -39,16 +62,13 @@ namespace EducationalSystem
                 options.Password.RequiredLength = 6;
                 options.Password.RequiredUniqueChars = 0;
 
-                // User settings.
                 options.User.AllowedUserNameCharacters =
                 "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
             })
                 .AddEntityFrameworkStores<Education_System>()
-                .AddDefaultTokenProviders();  // Registers the UserManager and other Identity-related services
+                .AddDefaultTokenProviders();
 
-            // Add scoped repositories for dependency injection
-
-            //scoped repositories Clean
+            // Register generic repositories
             var entityTypes = Assembly.GetAssembly(typeof(BaseEntity))
                 .GetTypes()
                 .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(BaseEntity)))
@@ -66,8 +86,18 @@ namespace EducationalSystem
             builder.Services.AddScoped<ILessonRepository, LessonRepository>();
             builder.Services.AddScoped<ISubLessonRepository, SubLessonRepository>();
 
+            // Enable CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
 
-            // Add Swagger for API documentation
+            // Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -78,13 +108,15 @@ namespace EducationalSystem
 
             await RunSeedingAsync(services);
 
-
-            // Configure the HTTP request pipeline.
+            // Configure pipeline
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            // Use CORS
+            app.UseCors("AllowAll");
 
             app.UseAuthorization();
 
@@ -104,7 +136,6 @@ namespace EducationalSystem
                 var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-                //await dbContext.Database.MigrateAsync();
                 await Education_System_Seeding.SeedUsersAndRolesAsync(userManager, roleManager);
                 await Education_System_Seeding.SeedAsync(dbContext);
 

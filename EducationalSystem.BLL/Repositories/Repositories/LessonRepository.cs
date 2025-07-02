@@ -1,149 +1,99 @@
-﻿using EducationalSystem.BLL.Repositories.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.DAL.Models;
 using EducationalSystem.DAL.Models.Context;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EducationalSystem.BLL.Repositories.Repositories
 {
     public class LessonRepository : GenericReposiory<Lessons>, ILessonRepository
     {
         private readonly Education_System _dbContext;
-
-        public LessonRepository(Education_System dbContext) : base(dbContext)
+        public LessonRepository(Education_System dbcontext) : base(dbcontext)
         {
-            _dbContext = dbContext;
+            _dbContext = dbcontext;
         }
 
-        // Get all lessons with optional filters
-        public async Task<IEnumerable<Lessons>> GetLessonsAsync(int? sublessonId = null, string title = null)
+        public async Task<Lesson_Completions> existingCompletion(string userId, int lessonId)
         {
-            var query = _dbContext.Lessons.AsQueryable();
-
-            // Apply filters
-            if (sublessonId.HasValue)
-                query = query.Where(l => l.SubLessonID == sublessonId);
-
-            if (!string.IsNullOrEmpty(title))
-                query = query.Where(l => l.LessonTitle.Contains(title));
-
-            return await query.ToListAsync();
+            var existingCompletion = await _dbContext.Lesson_Completions
+            .FirstOrDefaultAsync(lc => lc.UserID == userId && lc.LessonID == lessonId);
+            return existingCompletion;
         }
 
-        // Get lessons by sublesson ID
-        public async Task<IEnumerable<Lessons>> GetLessonsBySublessonAsync(int sublessonId)
+
+
+        public async Task<List<Comments>> GetAllCommentsByLessonId(int lessonId)
         {
-            return await _dbContext.Lessons
-                .Where(l => l.SubLessonID == sublessonId)
+            var comments = await _dbContext.Comments
+                .Where(li => li.LessonID == lessonId)
                 .ToListAsync();
+
+            return comments;
         }
 
-        // Get a specific lesson with prerequisites
-        public async Task<Lessons> GetLessonWithPrerequisitesAsync(int lessonId)
+        public async Task<List<Lessons>> GetLessonsOrderedByPrerequisiteCompletion(int subLessonId, string userId)
         {
-            return await _dbContext.Lessons
-                .Include(l => l.PrerequisiteLessonPrerequisites)
-                .FirstOrDefaultAsync(l => l.ID == lessonId);
-        }
-
-        // Get prerequisites for a specific lesson
-        public async Task<IEnumerable<Lesson_Prerequisites>> GetPrerequisitesForLessonAsync(int lessonId)
-        {
-            return await _dbContext.Lesson_Prerequisites
-                .Where(lp => lp.CurrentLessonID == lessonId)
-                .ToListAsync();
-        }
-
-        // Add a prerequisite to a lesson
-        public async Task<bool> AddPrerequisiteAsync(int lessonId, int prerequisiteLessonId)
-        {
-            var prerequisite = new Lesson_Prerequisites
-            {
-                CurrentLessonID = lessonId,
-                PrerequisiteLessonID = prerequisiteLessonId
-            };
-
-            _dbContext.Lesson_Prerequisites.Add(prerequisite);
-            await _dbContext.SaveChangesAsync();
-            return true;
-        }
-
-        // Mark a lesson as completed for a user
-        public async Task<bool> MarkLessonAsCompletedAsync(int lessonId, string userId)
-        {
-            var completion = new Lesson_Completions
-            {
-                UserID = userId,
-                LessonID = lessonId,
-                CompletionDate = DateTime.UtcNow
-            };
-
-            _dbContext.Lesson_Completions.Add(completion);
-            await _dbContext.SaveChangesAsync();
-            return true;
-        }
-
-        // Check if a user has completed all prerequisites for a lesson
-        public async Task<bool> CheckPrerequisiteCompletionAsync(int lessonId, string userId)
-        {
-            var prerequisites = await _dbContext.Lesson_Prerequisites
-                .Where(lp => lp.CurrentLessonID == lessonId)
-                .Select(lp => lp.PrerequisiteLessonID)
+            // Fetch lessons for the specific subLessonId
+            var lessons = await _dbContext.Lessons
+                .Where(l => l.SubLessonID == subLessonId)
                 .ToListAsync();
 
             var completedLessons = await _dbContext.Lesson_Completions
-                .Where(lc => lc.UserID == userId && prerequisites.Contains(lc.LessonID))
-                .Select(lc => lc.LessonID)
+                .Where(lc => lc.UserID == userId && lc.Lessons.SubLessonID == subLessonId)
+                .Select(lc => lc.Lessons)
                 .ToListAsync();
 
-            return prerequisites.All(p => completedLessons.Contains(p));
+            //// Order lessons by the count of prerequisites completed
+            //var orderLessons = lessons
+            //    .OrderBy(l => l.PrerequisiteLessonPrerequisites.Count == 0 ? 0 : l.PrerequisiteLessonPrerequisites.Count(p => completedLessonsIds.Contains(p.PrerequisiteLessonID)))
+            //    .ThenBy(l => l.ID)
+            //    .ToList();
+
+            return completedLessons;
         }
 
-        // Get lessons for a sublesson, ordered by prerequisite completion
-        public async Task<IEnumerable<Lessons>> GetLessonsOrderedByPrerequisiteAsync(int sublessonId, string userId)
+        public async Task<List<Lesson_Prerequisites>> GetLessonPrerequisitesByIdAsync(int lessonId)
+        {
+            var LessonPrerequisites = await _dbContext.Lesson_Prerequisites
+                .Where(lp => lp.CurrentLessonID == lessonId)
+                .ToListAsync();
+
+            return LessonPrerequisites;
+        }
+
+        public async Task<List<Lessons>> GetLessonsByCrsIdAsync(int crsId)
         {
             var lessons = await _dbContext.Lessons
-                .Where(l => l.SubLessonID == sublessonId)
+                .Where(l => l.CourseID == crsId)
                 .ToListAsync();
 
-            var orderedLessons = new List<Lessons>();
-            foreach (var lesson in lessons)
-            {
-                if (await CheckPrerequisiteCompletionAsync(lesson.ID, userId))
-                {
-                    orderedLessons.Add(lesson);
-                }
-            }
-
-            return orderedLessons;
+            return lessons;
         }
-        public async Task AddLessonToCourseAsync(Lessons lesson, int courseId)
+
+        public Task<List<Lessons>> GetLessonsByIdsAsync(List<int> lessonsIds)
         {
-            // Associate the lesson with the course
-            lesson.CourseID = courseId;
-
-            await _dbContext.Lessons.AddAsync(lesson);
-            await _dbContext.SaveChangesAsync();
+            var lessons = _dbContext.Lessons.Where(l => lessonsIds.Contains(l.ID))
+                .ToListAsync();
+            return lessons;
         }
 
-        // Delete a lesson by ID
-        public async Task DeleteLessonAsync(int id)
+        public async Task<List<Lessons>> GetLessonsBySubLessonIdAsync(int subLessonId)
         {
-            var lesson = await _dbContext.Lessons.FindAsync(id);
-            if (lesson != null)
-            {
-                _dbContext.Lessons.Remove(lesson);
-                await _dbContext.SaveChangesAsync();
-            }
-        }
-        public async Task AddSubLessonToCourseAsync(SubLessons subLessons , int courseId)
-        {
-            subLessons.CourseID = courseId;
+            var lessons = await _dbContext.Lessons
+                 .Where(l => l.SubLessonID == subLessonId)
+                 .ToListAsync();
 
-            await _dbContext.SubLessons.AddAsync(subLessons);
-            await _dbContext.SaveChangesAsync();
+            return lessons;
         }
+
+
+
     }
 }

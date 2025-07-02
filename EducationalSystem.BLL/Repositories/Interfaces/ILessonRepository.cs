@@ -1,42 +1,22 @@
-﻿using EducationalSystem.DAL.Models;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using EducationalSystem.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EducationalSystem.BLL.Repositories.Interfaces
 {
     public interface ILessonRepository : IGenericRepository<Lessons>
     {
-        // Get all lessons with optional filters
-        Task<IEnumerable<Lessons>> GetLessonsAsync(int? sublessonId = null, string title = null);
+        Task<List<Lessons>> GetLessonsByCrsIdAsync(int crsId);
+        Task<List<Comments>> GetAllCommentsByLessonId(int lessonId);
+        Task<List<Lessons>> GetLessonsBySubLessonIdAsync(int subLessonId);
+        Task<List<Lesson_Prerequisites>> GetLessonPrerequisitesByIdAsync(int lessonId);
+        Task<List<Lessons>> GetLessonsByIdsAsync(List<int> lessonsIds);
+        Task<Lesson_Completions> existingCompletion(string userId, int lessonId);
+        Task<List<Lessons>> GetLessonsOrderedByPrerequisiteCompletion(int subLessonId, string userId);
 
-        // Get lessons by sublesson ID
-        Task<IEnumerable<Lessons>> GetLessonsBySublessonAsync(int sublessonId);
-
-        // Get a specific lesson with prerequisites
-        Task<Lessons> GetLessonWithPrerequisitesAsync(int lessonId);
-
-        // Get prerequisites for a specific lesson
-        Task<IEnumerable<Lesson_Prerequisites>> GetPrerequisitesForLessonAsync(int lessonId);
-
-        // Add a prerequisite to a lesson
-        Task<bool> AddPrerequisiteAsync(int lessonId, int prerequisiteLessonId);
-
-        // Mark a lesson as completed for a user
-        Task<bool> MarkLessonAsCompletedAsync(int lessonId, string userId);
-
-        // Check if a user has completed all prerequisites for a lesson
-        Task<bool> CheckPrerequisiteCompletionAsync(int lessonId, string userId);
-
-        // Get lessons for a sublesson, ordered by prerequisite completion
-        Task<IEnumerable<Lessons>> GetLessonsOrderedByPrerequisiteAsync(int sublessonId, string userId);
-        // Add a lesson to a course
-        Task AddLessonToCourseAsync(Lessons lesson, int courseId);
-
-        // Add a AddSubLesson to a course
-        Task AddSubLessonToCourseAsync(SubLessons subLessons, int courseId);
-
-
-        // Delete a lesson by ID
-        Task DeleteLessonAsync(int id);
     }
 }

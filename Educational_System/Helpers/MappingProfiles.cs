@@ -58,6 +58,7 @@ namespace Educational_System.Helpers
 
             CreateMap<SubLessons, postSubLessonDto>()
                 .ReverseMap();
+            CreateMap<TextSubmissions, TextSubmissionDTO>().ReverseMap();
         }
     }
 }

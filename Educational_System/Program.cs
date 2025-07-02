@@ -4,6 +4,7 @@ using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.BLL.Repositories.Repositories;
 using EducationalSystem.DAL.Models;
 using EducationalSystem.DAL.Models.Context;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -13,6 +14,14 @@ namespace EducationalSystem
 {
     public class Program
     {
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+       Host.CreateDefaultBuilder(args)
+           .ConfigureWebHostDefaults(webBuilder =>
+           {
+               webBuilder.UseStartup<Program>();
+           })
+           .UseSerilog(); // Use Serilog
+
         public static async Task Main(string[] args)
         {
             // Removed invalid 'using Serilog;' statement causing errors.
@@ -125,6 +134,7 @@ namespace EducationalSystem
             app.Run();
         }
 
+        // Should Understand !!
         private static async Task RunSeedingAsync(IServiceProvider services)
         {
             var loggerFactory = services.GetRequiredService<ILoggerFactory>();

@@ -3,6 +3,8 @@ using Educational_System.Dto;
 using Educational_System.Dto.Category;
 using Educational_System.Dto.Choices;
 using Educational_System.Dto.Lesson;
+using Educational_System.Dto.Category;
+using Educational_System.Dto.Choices; // Added namespace for Choices DTOs
 using EducationalSystem.DAL.Models;
 using System.Net;
 
@@ -32,8 +34,12 @@ namespace Educational_System.Helpers
 
             // Specializations mapping
             CreateSpecializatiosMappings();
+            CreateCategoriesMappings();
+
+            CreateSpecializatiosMappings();
 
             // Course mappings
+            CreateCourseMappings();
             CreateCourseMappings();
 
             // Choices mapping
@@ -59,6 +65,9 @@ namespace Educational_System.Helpers
             CreateMap<SubLessons, postSubLessonDto>()
                 .ReverseMap();
             CreateMap<TextSubmissions, TextSubmissionDTO>().ReverseMap();
+            // Added mappings for Choices
+            CreateMap<Choices, GetChoicesDto>();
+            CreateMap<PostChoicesDto, Choices>();
         }
     }
 }

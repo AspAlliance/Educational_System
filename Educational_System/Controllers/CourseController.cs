@@ -262,5 +262,36 @@ namespace EducationalSystem.Controllers
         }
 
 
+    //    [HttpGet("filter")]
+    //    public async Task<IActionResult> FilterCourses(decimal? minPrice, decimal? maxPrice, string? instructor, int? categoryId)
+    //    {
+    //        var spec = new CourseSpecification(minPrice, maxPrice, instructor, categoryId);
+    //        var courses = await _courseRepository.GetAllWithSpec(spec);
+    //        var coursesInfo = _mapper.Map<List<getCourseDto>>(courses);
+
+    //        return Ok(coursesInfo);
+    //    }
+
+    //    [HttpGet("{id}/students")]
+    //    public async Task<IActionResult> GetEnrolledStudents(int id)
+    //    {
+
+    //        var spec = new CourseSpecification();
+    //        var course = await _courseRepository.GetByIdWithSpecAsync(id, spec);
+    //        var courseInfo = _mapper.Map<getEnrolledStudentsDto>(course);
+    //        if (courseInfo == null)
+    //            return NotFound("Course not found.");
+
+    //        return Ok(courseInfo);
+    //    }
+
+    //    [HttpGet("instructor/{instructorId}")]
+    //    public async Task<IActionResult> GetInstructorCourses(int instructorId)
+    //    {
+    //        var spec = new CourseSpecification();
+    //        var instructorCourses = await _courseRepository.GetCoursesByInstructorWithSpecsAsync(instructorId, spec);
+    //        var instructorCoursesInfo = _mapper.Map<List<getCourseDto>>(instructorCourses);
+    //        return Ok(instructorCoursesInfo);
+    //    }
     }
 }

@@ -43,8 +43,15 @@ namespace Educational_System.Helpers
                 }).ToList()));
 
 
+            // ازل أي MapFrom قديم لـ ThumbnailURL
             CreateMap<Courses, postCourseDto>()
-                .ReverseMap();
+                .ForMember(dest => dest.Image, opt => opt.Ignore());
+
+            CreateMap<postCourseDto, Courses>()
+                .ForMember(dest => dest.ThumbnailURL, opt => opt.Ignore());
+
+
+
 
             CreateMap<Courses, getEnrolledStudentsDto>()
                 .ForMember(dest => dest.CourseTitle, opt => opt.MapFrom(src => src.CourseTitle))

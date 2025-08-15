@@ -9,9 +9,10 @@ namespace Educational_System.Dto.Course
         public int? CategoryID { get; set; }
         public int? duration { get; set; } // Duration in hours
         public DateTime? CreatedDate { get; set; }
-        public string? ThumbnailURL { get; set; }
+        //public string? ThumbnailURL { get; set; }
         public decimal? TotalAmount { get; set; }
         public string? level { get; set; } // Level of the course (e.g., Beginner, Intermediate, Advanced)
+        public IFormFile Image { get; set; }
 
     }
 }

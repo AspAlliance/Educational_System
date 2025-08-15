@@ -23,7 +23,7 @@ namespace EducationalSystem.Controllers
     {
         private readonly ICourseRepository _courseRepository;
         private readonly IMapper _mapper;
-
+        private readonly IWebHostEnvironment _environment;
         private readonly IMemoryCache _cache1;
         private readonly ILogger<CourseController> _logger;
         private readonly IDistributedCache _cache;
@@ -35,13 +35,16 @@ namespace EducationalSystem.Controllers
             IMapper mapper,
             IDistributedCache cache,
             IMemoryCache cache1,
-            ILogger<CourseController> logger)
+            ILogger<CourseController> logger
+            ,
+            IWebHostEnvironment environment)
         {
             _courseRepository = repository;
             _mapper = mapper;
             _cache = cache;
             _cache1 = cache1;
             _logger = logger;
+            _environment = environment;
         }
 
 
@@ -121,7 +124,6 @@ namespace EducationalSystem.Controllers
             stopwatch.Stop();
             return Ok(data);
         }
-
         
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -136,33 +138,56 @@ namespace EducationalSystem.Controllers
         }
         //Instructor Only)
         [HttpPost]
-        public async Task<IActionResult> AddCourse([FromBody] postCourseDto courseDto)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> AddCourse([FromForm] postCourseDto courseDto)
         {
-
-            var mappedCourse = _mapper.Map<postCourseDto, Courses>(courseDto);
-
-            if (mappedCourse == null)
+            if (courseDto is null)
                 return BadRequest("Course is null.");
 
-            await _courseRepository.AddAsync(mappedCourse);
-            return CreatedAtAction(nameof(GetById), new { id = mappedCourse.ID }, mappedCourse);
-        }
-        //Instructor Only
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCourse(int id, [FromBody] postCourseDto courseDto)
-        {
-            if (courseDto == null)
-                return BadRequest("Course data is null.");
+            var course = _mapper.Map<Courses>(courseDto);
 
+            // رفع الصورة (اختياري)
+            if (courseDto.Image is { Length: > 0 })
+            {
+                var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+                Directory.CreateDirectory(uploads);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(courseDto.Image.FileName)}";
+                var filePath = Path.Combine(uploads, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                    await courseDto.Image.CopyToAsync(stream);
+
+                // خيّار 1: URL نسبي (يفتح على نفس الدومين)
+                // course.ThumbnailURL = $"/uploads/{fileName}";
+
+                // خيّار 2: URL كامل — مناسب لو هتستهلكه من دومين مختلف
+                course.ThumbnailURL = $"/uploads/{fileName}";
+
+            }
+            else
+            {
+                // صورة افتراضية (حط ملف default.jpg في wwwroot/uploads)
+                course.ThumbnailURL = "/uploads/default.jpg";
+            }
+
+            await _courseRepository.AddAsync(course);
+            return CreatedAtAction(nameof(GetById), new { id = course.ID }, course);
+        }
+
+        [HttpPut("{id}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateCourse(int id, [FromForm] postCourseDto courseDto)
+        {
             var existingCourse = await _courseRepository.GetByIdAsync(id);
-            if (existingCourse == null)
+            if (existingCourse is null)
                 return NotFound("Course not found.");
 
-            // هنا نعمل Merge يدوي للقيم اللي مش null
-            if (!string.IsNullOrEmpty(courseDto.CourseTitle))
+            // تحديث الحقول الاختيارية
+            if (!string.IsNullOrWhiteSpace(courseDto.CourseTitle))
                 existingCourse.CourseTitle = courseDto.CourseTitle;
 
-            if (!string.IsNullOrEmpty(courseDto.Description))
+            if (!string.IsNullOrWhiteSpace(courseDto.Description))
                 existingCourse.Description = courseDto.Description;
 
             if (courseDto.CategoryID.HasValue)
@@ -176,12 +201,30 @@ namespace EducationalSystem.Controllers
 
             if (courseDto.TotalAmount.HasValue)
                 existingCourse.TotalAmount = courseDto.TotalAmount.Value;
-            if (!string.IsNullOrEmpty(courseDto.level))
+
+            if (!string.IsNullOrWhiteSpace(courseDto.level))
                 existingCourse.level = courseDto.level;
+
+            // لو فيه صورة جديدة – احفظ واستبدل الرابط
+            if (courseDto.Image is { Length: > 0 })
+            {
+                var uploads = Path.Combine(_environment.WebRootPath, "uploads");
+                Directory.CreateDirectory(uploads);
+
+                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(courseDto.Image.FileName)}";
+                var filePath = Path.Combine(uploads, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                    await courseDto.Image.CopyToAsync(stream);
+
+                // نخزن المسار النسبي فقط
+                existingCourse.ThumbnailURL = $"/uploads/{fileName}";
+            }
 
             await _courseRepository.UpdateAsync(existingCourse);
             return NoContent();
         }
+
 
         //Instructor or Admin Only)
         [HttpDelete("{id}")]

@@ -4,7 +4,6 @@ using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.BLL.Repositories.Repositories;
 using EducationalSystem.DAL.Models;
 using EducationalSystem.DAL.Models.Context;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -14,14 +13,6 @@ namespace EducationalSystem
 {
     public class Program
     {
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-       Host.CreateDefaultBuilder(args)
-           .ConfigureWebHostDefaults(webBuilder =>
-           {
-               webBuilder.UseStartup<Program>();
-           })
-           .UseSerilog(); // Use Serilog
-
         public static async Task Main(string[] args)
         {
             var logFileName = $"Logs/myapp_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
@@ -36,128 +27,115 @@ namespace EducationalSystem
             try
             {
                 Log.Information("Starting up the application...");
-                await CreateHostBuilder(args).Build().RunAsync();
+
+                var builder = WebApplication.CreateBuilder(args);
+
+                // Replace the default logger with Serilog
+                builder.Host.UseSerilog();
+
+                // Add services to the container.
+                builder.Services.AddControllers();
+                builder.Services.AddScoped<EmailService>();
+
+                // Auto Mapper
+                builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
+
+                // DbContext with migration assembly
+                builder.Services.AddDbContext<Education_System>(options =>
+                    options.UseSqlServer(builder.Configuration.GetConnectionString("DB1"),
+                        b => b.MigrationsAssembly("EducationalSystem.DAL")));
+
+                // Caching
+                builder.Services.AddMemoryCache();
+                builder.Services.AddStackExchangeRedisCache(options =>
+                {
+                    options.Configuration = "localhost:6379"; // Assuming Redis is running locally
+                });
+
+                // Identity config
+                builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequiredUniqueChars = 0;
+                    options.User.AllowedUserNameCharacters =
+                        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+                })
+                .AddEntityFrameworkStores<Education_System>()
+                .AddDefaultTokenProviders();
+
+                // Register generic repositories
+                var entityTypes = Assembly.GetAssembly(typeof(BaseEntity))
+                    .GetTypes()
+                    .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(BaseEntity)))
+                    .ToList();
+
+                foreach (var entityType in entityTypes)
+                {
+                    var interfaceType = typeof(IGenericRepository<>).MakeGenericType(entityType);
+                    var implementationType = typeof(GenericReposiory<>).MakeGenericType(entityType);
+                    builder.Services.AddScoped(interfaceType, implementationType);
+                }
+
+                builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
+                builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+                builder.Services.AddScoped<ILessonRepository, LessonRepository>();
+                builder.Services.AddScoped<ISubLessonRepository, SubLessonRepository>();
+                builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
+
+                // Enable CORS
+                builder.Services.AddCors(options =>
+                {
+                    options.AddPolicy("AllowAll", policy =>
+                    {
+                        policy.AllowAnyOrigin()
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                    });
+                });
+
+                // Swagger
+                builder.Services.AddEndpointsApiExplorer();
+                builder.Services.AddSwaggerGen();
+
+                var app = builder.Build();
+
+                // Serve static files from wwwroot
+                app.UseStaticFiles();
+
+                // Database seeding
+                using (var scope = app.Services.CreateScope())
+                {
+                    var services = scope.ServiceProvider;
+                    await RunSeedingAsync(services);
+                }
+
+                // Configure pipeline
+                if (app.Environment.IsDevelopment())
+                {
+                    app.UseSwagger();
+                    app.UseSwaggerUI();
+                }
+
+                app.UseCors("AllowAll");
+                app.UseAuthorization();
+                app.MapControllers();
+
+                await app.RunAsync();
             }
             catch (Exception ex)
             {
                 Log.Fatal(ex, "Application terminated unexpectedly!");
             }
-
-            var builder = WebApplication.CreateBuilder(args);
-
-            // Replace the default logger with Serilog
-            builder.Host.UseSerilog();
-            // Add services to the container.
-            builder.Services.AddControllers();
-            builder.Services.AddScoped<EmailService>();
-
-            // Auto Mapper
-            builder.Services.AddAutoMapper(M => M.AddProfile(new MappingProfiles()));
-
-            // DbContext with migration assembly
-            builder.Services.AddDbContext<Education_System>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DB1"),
-                    b => b.MigrationsAssembly("EducationalSystem.DAL")));
-
-
-
-            // AddMemoryCache registers a memory cache service for quick data access.
-            builder.Services.AddMemoryCache();
-
-            // AddDistributedMemoryCache registers a distributed memory cache service for caching data across multiple instances.
-            
-            
-            
-            
-            
-            
-            
-            
-            builder.Services.AddStackExchangeRedisCache(options =>
+            finally
             {
-                options.Configuration = "localhost:6379"; // Assuming Redis is running locally
-            });
-
-
-
-
-
-
-
-            // Identity config
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredLength = 6;
-                options.Password.RequiredUniqueChars = 0;
-
-                options.User.AllowedUserNameCharacters =
-                "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-            })
-                .AddEntityFrameworkStores<Education_System>()
-                .AddDefaultTokenProviders();
-
-            // Register generic repositories
-            var entityTypes = Assembly.GetAssembly(typeof(BaseEntity))
-                .GetTypes()
-                .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(BaseEntity)))
-                .ToList();
-
-            foreach (var entityType in entityTypes)
-            {
-                var interfaceType = typeof(IGenericRepository<>).MakeGenericType(entityType);
-                var implementationType = typeof(GenericReposiory<>).MakeGenericType(entityType);
-                builder.Services.AddScoped(interfaceType, implementationType);
+                Log.CloseAndFlush();
             }
-
-            builder.Services.AddScoped<IInstructorRepository, InstructorRepository>();
-            builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-            builder.Services.AddScoped<ILessonRepository, LessonRepository>();
-            builder.Services.AddScoped<ISubLessonRepository, SubLessonRepository>();
-            builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
-            // Enable CORS
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll", policy =>
-                {
-                    policy.AllowAnyOrigin()
-                          .AllowAnyHeader()
-                          .AllowAnyMethod();
-                });
-            });
-            // test comit
-            // Swagger
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            var app = builder.Build();
-
-            using var scope = app.Services.CreateScope();
-            var services = scope.ServiceProvider;
-
-            await RunSeedingAsync(services);
-
-            // Configure pipeline
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            // Use CORS
-            app.UseCors("AllowAll");
-
-            app.UseAuthorization();
-
-            app.MapControllers();
-
-            app.Run();
         }
 
-        // Should Understand !!
         private static async Task RunSeedingAsync(IServiceProvider services)
         {
             var loggerFactory = services.GetRequiredService<ILoggerFactory>();

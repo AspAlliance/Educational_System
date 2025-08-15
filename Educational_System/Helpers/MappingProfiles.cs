@@ -40,7 +40,6 @@ namespace Educational_System.Helpers
 
             // Course mappings
             CreateCourseMappings();
-            CreateCourseMappings();
 
             // Choices mapping
             CreateMap<Choices, GetChoicesDto>();
@@ -68,6 +67,10 @@ namespace Educational_System.Helpers
             // Added mappings for Choices
             CreateMap<Choices, GetChoicesDto>();
             CreateMap<PostChoicesDto, Choices>();
+            CreateMap<PostDiscountDto, Discounts>();
+            CreateMap<Discounts, GetDiscountDto>()
+                .ForMember(dest => dest.CourseTitle, opt => opt.MapFrom(src => src.Courses.CourseTitle));
+
         }
     }
 }

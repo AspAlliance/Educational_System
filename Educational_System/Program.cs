@@ -128,7 +128,7 @@ namespace EducationalSystem
                           .AllowAnyMethod();
                 });
             });
-
+            // test comit
             // Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

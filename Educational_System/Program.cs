@@ -24,13 +24,24 @@ namespace EducationalSystem
 
         public static async Task Main(string[] args)
         {
-            // Removed invalid 'using Serilog;' statement causing errors.
+            var logFileName = $"Logs/myapp_{DateTime.Now:yyyyMMdd_HHmmss}.txt";
 
             Log.Logger = new LoggerConfiguration()
-           .MinimumLevel.Information()
-           .WriteTo.Console()
-           .WriteTo.File("Logs/myapp.txt", rollingInterval: RollingInterval.Day)
-           .CreateLogger();
+                .MinimumLevel.Information()
+                .WriteTo.Console()
+                .WriteTo.Debug()
+                .WriteTo.File(logFileName)
+                .CreateLogger();
+
+            try
+            {
+                Log.Information("Starting up the application...");
+                await CreateHostBuilder(args).Build().RunAsync();
+            }
+            catch (Exception ex)
+            {
+                Log.Fatal(ex, "Application terminated unexpectedly!");
+            }
 
             var builder = WebApplication.CreateBuilder(args);
 
@@ -54,10 +65,22 @@ namespace EducationalSystem
             builder.Services.AddMemoryCache();
 
             // AddDistributedMemoryCache registers a distributed memory cache service for caching data across multiple instances.
-            //builder.Services.AddStackExchangeRedisCache(options =>
-            //{
-            //    options.Configuration = "localhost:6379"; // Assuming Redis is running locally
-            //});
+            
+            
+            
+            
+            
+            
+            
+            
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = "localhost:6379"; // Assuming Redis is running locally
+            });
+
+
+
+
 
 
 
@@ -94,7 +117,7 @@ namespace EducationalSystem
             builder.Services.AddScoped<ICourseRepository, CourseRepository>();
             builder.Services.AddScoped<ILessonRepository, LessonRepository>();
             builder.Services.AddScoped<ISubLessonRepository, SubLessonRepository>();
-
+            builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
             // Enable CORS
             builder.Services.AddCors(options =>
             {
@@ -105,7 +128,7 @@ namespace EducationalSystem
                           .AllowAnyMethod();
                 });
             });
-
+            // test comit
             // Swagger
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

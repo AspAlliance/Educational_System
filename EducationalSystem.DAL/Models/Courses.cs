@@ -8,6 +8,8 @@
         public DateTime? CreatedDate { get; set; }
         public string ThumbnailURL { get; set; }
         public decimal TotalAmount { get; set; }
+        public int? duration { get; set; } // Duration in hours
+        public string? level { get; set; } // Beginner, Intermediate, Advanced
 
         // Navigation properties
         virtual public Categories Categories { get; set; }

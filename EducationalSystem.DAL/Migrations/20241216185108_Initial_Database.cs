@@ -236,7 +236,9 @@ namespace EducationalSystem.DAL.Migrations
                     CategoryID = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2(0)", precision: 0, nullable: false, defaultValueSql: "GETDATE()"),
                     ThumbnailURL = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false)
+                    TotalAmount = table.Column<decimal>(type: "decimal(10,2)", precision: 10, scale: 2, nullable: false),
+                    duration = table.Column<int>(type: "int", nullable: true)
+
                 },
                 constraints: table =>
                 {

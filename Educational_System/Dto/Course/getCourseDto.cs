@@ -29,6 +29,8 @@ namespace Educational_System.Dto.Course
         public DateTime? CreatedDate { get; set; }
         public string ThumbnailURL { get; set; }
         public decimal TotalAmount { get; set; }
+        public int? duration { get; set; }
+        public string? level { get; set; } // Beginner, Intermediate, Advanced
 
         // Discount Details
         public DateTime DiscountStartDate { get; set; }

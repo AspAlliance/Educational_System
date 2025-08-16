@@ -235,7 +235,14 @@ namespace EducationalSystem.Controllers
                         return Ok(new
                         {
                             token = new JwtSecurityTokenHandler().WriteToken(mytoken),
-                            expiration = DateTime.Now.AddHours(1)
+                            expiration = DateTime.Now.AddHours(1),
+                            userinfo = new
+                            {
+                                Id = userfromdb.Id,
+                                Username = userfromdb.UserName,
+                                Name = userfromdb.Name,
+                                Email= userfromdb.Email
+                            }
                         });
                     }
                 }

@@ -286,11 +286,11 @@ namespace EducationalSystem.Controllers
 
         // enroll course by user id 
         [Authorize]
-        [HttpPost("enroll/{courseId}")]
-        public async Task<IActionResult> EnrollInCourse(int courseId)
+        [HttpPost("enroll/{id}")]
+        public async Task<IActionResult> EnrollInCourse(int id)
         {
 
-            var course = await _courseRepository.GetByIdAsync(courseId);
+            var course = await _courseRepository.GetByIdAsync(id);
             if (course == null)
                 return NotFound("Course not found.");
             // Assuming you have a way to get the current user's ID
@@ -300,7 +300,7 @@ namespace EducationalSystem.Controllers
             // Check if the user is already enrolled
 
 
-            var enroll = await _enrollRepository.EnrollInCourseAsync(courseId, userId);
+            var enroll = await _enrollRepository.EnrollInCourseAsync(id, userId);
 
 
             if (!enroll)

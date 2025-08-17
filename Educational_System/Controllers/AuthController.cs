@@ -62,7 +62,19 @@ namespace EducationalSystem.Controllers
                     // Send confirmation link via email
                     await _emailService.SendEmailConfirmationAsync(register.Email, confirmationLink);
 
-                    return Ok(new { message = "User registered successfully. Please check your email to confirm your registration." , token = token});
+                    return Ok(new
+                    {
+                        message = "User registered successfully. Please check your email to confirm your registration.",
+                        token = token,
+                        userinfo = new
+                        {
+                            Id = applicationUser.Id,
+                            Username = applicationUser.UserName,
+                            Name = applicationUser.Name,
+                            Email = applicationUser.Email,
+                            ProfileImg = applicationUser.ProfileImageURL
+                        }
+                    });
                 }
 
                 foreach (var item in result.Errors)
@@ -241,7 +253,8 @@ namespace EducationalSystem.Controllers
                                 Id = userfromdb.Id,
                                 Username = userfromdb.UserName,
                                 Name = userfromdb.Name,
-                                Email= userfromdb.Email
+                                Email = userfromdb.Email,
+                                ProfileImg = userfromdb.ProfileImageURL
                             }
                         });
                     }
@@ -273,7 +286,7 @@ namespace EducationalSystem.Controllers
                 // Send the reset link via email
                 await _emailService.SendResetPasswordEmail(request.Email, resetLink);
 
-                return Ok(new { Message = "If the email exists, a reset link has been sent." , token = token});
+                return Ok(new { Message = "If the email exists, a reset link has been sent.", token = token });
             }
             catch (Exception ex)
             {

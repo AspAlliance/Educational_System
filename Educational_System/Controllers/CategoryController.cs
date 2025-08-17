@@ -4,6 +4,7 @@ using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.BLL.Specification;
 using EducationalSystem.BLL.Specification.Specs;
 using EducationalSystem.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,7 @@ namespace EducationalSystem.Controllers
             _mapper = mapper;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {

@@ -5,12 +5,14 @@ using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.BLL.Repositories.Repositories;
 using EducationalSystem.BLL.Specification.Specs;
 using EducationalSystem.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using NuGet.Protocol.Core.Types;
 using System.Diagnostics;
+using System.Security.Claims;
 using System.Text.Json;
 
 
@@ -29,15 +31,16 @@ namespace EducationalSystem.Controllers
         private readonly IDistributedCache _cache;
         private static bool _redisDown = false;
         private static DateTime _lastRedisFail = DateTime.MinValue;
-
+        private readonly IEnrollRepository _enrollRepository;
         public CourseController(
             ICourseRepository repository,
             IMapper mapper,
             IDistributedCache cache,
             IMemoryCache cache1,
-            ILogger<CourseController> logger
-            ,
-            IWebHostEnvironment environment)
+            ILogger<CourseController> logger,
+            IWebHostEnvironment environment,
+            IEnrollRepository enrollRepository
+            )
         {
             _courseRepository = repository;
             _mapper = mapper;
@@ -45,10 +48,11 @@ namespace EducationalSystem.Controllers
             _cache1 = cache1;
             _logger = logger;
             _environment = environment;
+            _enrollRepository = enrollRepository;
         }
 
 
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -124,7 +128,7 @@ namespace EducationalSystem.Controllers
             stopwatch.Stop();
             return Ok(data);
         }
-        
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -280,75 +284,29 @@ namespace EducationalSystem.Controllers
             return Ok(instructorCoursesInfo);
         }
 
-        // make discount 
-       
+        // enroll course by user id 
+        [Authorize]
+        [HttpPost("enroll/{courseId}")]
+        public async Task<IActionResult> EnrollInCourse(int courseId)
+        {
+
+            var course = await _courseRepository.GetByIdAsync(courseId);
+            if (course == null)
+                return NotFound("Course not found.");
+            // Assuming you have a way to get the current user's ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User not authenticated.");
+            // Check if the user is already enrolled
 
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    var spec = new CourseSpecification();
-        //    var courses = await _courseRepository.GetAllWithSpec(spec);
-        //    var coursesInfo = _mapper.Map<List<getCourseDto>>(courses);
-        //    return Ok(coursesInfo);
-        //}
-        //[HttpGet]
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    string cacheKey = "all_courses";
+            var enroll = await _enrollRepository.EnrollInCourseAsync(courseId, userId);
 
-        //    if (!_cache.TryGetValue(cacheKey, out List<getCourseDto> cachedCourses))
-        //    {
-        //        _logger.LogInformation("⛔ الكاش فاضي، جاري تحميل الدورات من قاعدة البيانات...");
 
-        //        var spec = new CourseSpecification();
-        //        var courses = await _courseRepository.GetAllWithSpec(spec);
-        //        cachedCourses = _mapper.Map<List<getCourseDto>>(courses);
+            if (!enroll)
+                return BadRequest("User is already enrolled in this course.");
 
-        //        var cacheEntryOptions = new MemoryCacheEntryOptions()
-        //            .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
-
-        //        _cache.Set(cacheKey, cachedCourses, cacheEntryOptions);
-
-        //        _logger.LogInformation("✅ تم تخزين الدورات في الكاش.");
-        //    }
-        //    else
-        //    {
-        //        _logger.LogInformation("✅ تم جلب الدورات من الكاش.");
-        //    }
-
-        //    return Ok(cachedCourses);
-        //}
-        //    [HttpGet("filter")]
-        //    public async Task<IActionResult> FilterCourses(decimal? minPrice, decimal? maxPrice, string? instructor, int? categoryId)
-        //    {
-        //        var spec = new CourseSpecification(minPrice, maxPrice, instructor, categoryId);
-        //        var courses = await _courseRepository.GetAllWithSpec(spec);
-        //        var coursesInfo = _mapper.Map<List<getCourseDto>>(courses);
-
-        //        return Ok(coursesInfo);
-        //    }
-
-        //    [HttpGet("{id}/students")]
-        //    public async Task<IActionResult> GetEnrolledStudents(int id)
-        //    {
-
-        //        var spec = new CourseSpecification();
-        //        var course = await _courseRepository.GetByIdWithSpecAsync(id, spec);
-        //        var courseInfo = _mapper.Map<getEnrolledStudentsDto>(course);
-        //        if (courseInfo == null)
-        //            return NotFound("Course not found.");
-
-        //        return Ok(courseInfo);
-        //    }
-
-        //    [HttpGet("instructor/{instructorId}")]
-        //    public async Task<IActionResult> GetInstructorCourses(int instructorId)
-        //    {
-        //        var spec = new CourseSpecification();
-        //        var instructorCourses = await _courseRepository.GetCoursesByInstructorWithSpecsAsync(instructorId, spec);
-        //        var instructorCoursesInfo = _mapper.Map<List<getCourseDto>>(instructorCourses);
-        //        return Ok(instructorCoursesInfo);
-        //    }
+            return Ok("Successfully enrolled in the course.");
+        }
     }
 }

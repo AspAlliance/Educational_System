@@ -4,10 +4,13 @@ using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.BLL.Repositories.Repositories;
 using EducationalSystem.DAL.Models;
 using EducationalSystem.DAL.Models.Context;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Reflection;
+using System.Text;
 
 namespace EducationalSystem
 {
@@ -67,6 +70,25 @@ namespace EducationalSystem
                 .AddEntityFrameworkStores<Education_System>()
                 .AddDefaultTokenProviders();
 
+
+                builder.Services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidIssuer = "http://localhost:5088/",
+                        ValidAudience = "http://localhost:4200/",
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes("asd!@#$!#ii2@@123okpekrg%%$&(fgq35uRRTT823sdg"))
+                    };
+                });
+
                 // Register generic repositories
                 var entityTypes = Assembly.GetAssembly(typeof(BaseEntity))
                     .GetTypes()
@@ -85,6 +107,7 @@ namespace EducationalSystem
                 builder.Services.AddScoped<ILessonRepository, LessonRepository>();
                 builder.Services.AddScoped<ISubLessonRepository, SubLessonRepository>();
                 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
+                builder.Services.AddScoped<IEnrollRepository, EnrollRepository>();
 
                 // Enable CORS
                 builder.Services.AddCors(options =>
@@ -121,6 +144,7 @@ namespace EducationalSystem
                 }
 
                 app.UseCors("AllowAll");
+                app.UseAuthentication();
                 app.UseAuthorization();
                 app.MapControllers();
 

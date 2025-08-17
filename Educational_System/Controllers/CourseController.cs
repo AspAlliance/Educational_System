@@ -21,6 +21,7 @@ namespace EducationalSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CourseController : ControllerBase
     {
         private readonly ICourseRepository _courseRepository;
@@ -52,7 +53,6 @@ namespace EducationalSystem.Controllers
         }
 
 
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -289,7 +289,6 @@ namespace EducationalSystem.Controllers
         [HttpPost("enroll/{id}")]
         public async Task<IActionResult> EnrollInCourse(int id)
         {
-
             var course = await _courseRepository.GetByIdAsync(id);
             if (course == null)
                 return NotFound("Course not found.");

@@ -51,6 +51,23 @@ namespace EducationalSystem.Controllers
 
                 if (result.Succeeded)
                 {
+                    var roleExists = await roleManager.RoleExistsAsync("user");
+                    if (!roleExists)
+                    {
+                        var roleCreationResult = await roleManager.CreateAsync(new IdentityRole("user"));
+                        if (!roleCreationResult.Succeeded)
+                        {
+                            // Handle role creation errors
+                            foreach (var error in roleCreationResult.Errors)
+                            {
+                                ModelState.AddModelError("", error.Description);
+                            }
+                            return BadRequest(ModelState);
+                        }
+                    }
+
+                        await userManager.AddToRoleAsync(applicationUser, "user");
+
                     // Generate email confirmation token
                     var token = await userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
                     if (string.IsNullOrEmpty(token))
@@ -61,7 +78,8 @@ namespace EducationalSystem.Controllers
 
                     // Send confirmation link via email
                     await _emailService.SendEmailConfirmationAsync(register.Email, confirmationLink);
-
+                    //set the user role is "user"
+                   
                     return Ok(new
                     {
                         message = "User registered successfully. Please check your email to confirm your registration.",
@@ -72,7 +90,8 @@ namespace EducationalSystem.Controllers
                             Username = applicationUser.UserName,
                             Name = applicationUser.Name,
                             Email = applicationUser.Email,
-                            ProfileImg = applicationUser.ProfileImageURL
+                            ProfileImg = applicationUser.ProfileImageURL,
+                            Role = "user" // Default role
                         }
                     });
                 }
@@ -254,7 +273,8 @@ namespace EducationalSystem.Controllers
                                 Username = userfromdb.UserName,
                                 Name = userfromdb.Name,
                                 Email = userfromdb.Email,
-                                ProfileImg = userfromdb.ProfileImageURL
+                                ProfileImg = userfromdb.ProfileImageURL,
+                                Role = UserRole.FirstOrDefault() // Assuming the user has only one role
                             }
                         });
                     }

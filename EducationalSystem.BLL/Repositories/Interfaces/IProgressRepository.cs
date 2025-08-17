@@ -16,7 +16,7 @@ namespace EducationalSystem.BLL.Repositories.Interfaces
         // get the progress of a user in a specific course
         Task<Progress> GetProgressByUserIdAndCourseIdAsync(string userId, int courseId);
         // update the progress of a user in a specific course
-        Task<int> UpdateProgressAsync(string userId, int lessonId);
+        Task<int> UpdateProgressAsync(string userId, int lessonId,int courseId);
         // add a new progress record for a user in a specific course
         Task<bool> AddProgressAsync(string userId, int courseId, int score);
         // get all progress records for a specific course

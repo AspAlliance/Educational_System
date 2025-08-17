@@ -87,30 +87,53 @@ namespace EducationalSystem.BLL.Repositories.Repositories
                 .AnyAsync(p => p.UserID == userId && p.CourseID == courseId);
         }
 
-        public Task<int> UpdateProgressAsync(string userId, int lessonId)
+        public async Task<int> UpdateProgressAsync(string userId, int lessonId , int courseId)
         {
-            var courseId = _dbContext.Lessons
-                .Where(l => l.ID == lessonId)
-                .Select(l => l.CourseID)
-                .FirstOrDefault();
 
-            var lessoncompleted = _dbContext.Lesson_Completions
-            .Where(lc => lc.LessonID == lessonId && lc.UserID == userId).Count();
-            var totalLessons = _dbContext.Lessons
+
+            if (courseId == 0)
+                return 0; // مفيش كورس للدرس ده
+
+            var lessonCompleted = await _dbContext.Lesson_Completions
+                .Where(lc => lc.UserID == userId && lc.Lessons.CourseID == courseId)
+                .CountAsync();
+
+            var totalLessons = await _dbContext.Lessons
                 .Where(l => l.CourseID == courseId)
-                .Count();
-            var score = totalLessons / lessoncompleted * 100;
-            var progress = _dbContext.progresses
+                .CountAsync();
+
+            if (totalLessons == 0)
+                return 0;
+            // 5/6 = 0.8333 , 4/6 = 0.6666 / 2/6 = 0.3333
+            // احسب النسبة صح
+            var score = (int)((lessonCompleted / (double)totalLessons) * 100);
+
+            var progress = await _dbContext.progresses
                 .FirstOrDefaultAsync(p => p.UserID == userId && p.CourseID == courseId);
+
             if (progress == null)
             {
-                return Task.FromResult(0);
+                // لو مفيش Progress قبل كده، اعمله جديد
+                progress = new Progress
+                {
+                    UserID = userId,
+                    CourseID = courseId,
+                    Score = score,
+                    CompletedDate = DateTime.UtcNow
+                };
+                // if there is no progress record, add a new one
+                // else update the existing one
+                _dbContext.progresses.Add(progress);
             }
-            progress.Result.Score = score;
-            progress.Result.CompletedDate = DateTime.UtcNow;
-            _dbContext.progresses.Update(progress.Result);
-            _dbContext.SaveChangesAsync();
-            return Task.FromResult(score > 0 ? score : 0);
+            else
+            {
+                progress.Score = score;
+                progress.CompletedDate = DateTime.UtcNow;
+                _dbContext.progresses.Update(progress);
+            }
+
+            await _dbContext.SaveChangesAsync();
+            return score;
         }
     }
 }

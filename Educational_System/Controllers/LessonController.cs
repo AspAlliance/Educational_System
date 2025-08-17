@@ -306,8 +306,8 @@ namespace EducationalSystem.Controllers
         }
 
         // 8. Mark Lesson as Completed
-        [HttpPost("lessons/{lessonId}/complete")]
-        public async Task<IActionResult> LessonCompleted(int lessonId)
+        [HttpPost("lessons/{lessonId}/{courseId}/complete")]
+        public async Task<IActionResult> LessonCompleted(int lessonId ,int courseId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
@@ -332,17 +332,28 @@ namespace EducationalSystem.Controllers
             };
            await _genericlessonCompletions.AddAsync(lessonCompletion);
             // add in the progress table
-            var progress = await _progressRepository.UpdateProgressAsync(userId, lessonId);
+            var progress = await _progressRepository.UpdateProgressAsync(userId, lessonId, courseId);
 
-            return CreatedAtAction(
-               nameof(GetById),
-               new { id = lessonId },
-               lessonCompletion
-               );
+            return Ok(progress);
         }
 
-        // 9. Check Prerequisite Completion Before Entering Lesson --> not nessecary.
-
+        //get the score of the user in the course i mean the progress of the user in the course 
+        // 9. Get User Progress in Course
+        [HttpGet("courses/{courseId}/progress")]
+        public async Task<IActionResult> GetUserProgressInCourse(int courseId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized("User not authenticated.");
+            }
+            var progress = await _progressRepository.GetProgressByUserIdAndCourseIdAsync(userId, courseId);
+            if (progress == null)
+            {
+                return NotFound("No progress found for the user in this course.");
+            }
+            return Ok(progress);
+        }
         // 10. Get Lessons Ordered by Prerequisite Completion
         [HttpGet("sublessons/{subLessonId}/lessons/ordered")]
         public async Task<IActionResult> GetLessonsOrdereByPrereqCompletion(/*string userId,*/ int subLessonId)

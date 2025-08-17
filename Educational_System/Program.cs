@@ -108,7 +108,7 @@ namespace EducationalSystem
                 builder.Services.AddScoped<ISubLessonRepository, SubLessonRepository>();
                 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
                 builder.Services.AddScoped<IEnrollRepository, EnrollRepository>();
-
+                builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
                 // Enable CORS
                 builder.Services.AddCors(options =>
                 {

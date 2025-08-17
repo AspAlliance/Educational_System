@@ -3,6 +3,7 @@ using Educational_System.Dto;
 using Educational_System.Helpers;
 using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -127,7 +128,7 @@ namespace EducationalSystem.Controllers
 
             return BadRequest("Error confirming email.");
         }
-
+        [Authorize("admin")]
         [HttpPost(nameof(RegisterAsInstructor))]
         public async Task<IActionResult> RegisterAsInstructor([FromForm] RegisterInstructorDto register)
         {
@@ -192,14 +193,25 @@ namespace EducationalSystem.Controllers
 
                     // Save the instructor in the database
                     await _repository.AddAsync(instructor);
+                    var token = await userManager.GenerateEmailConfirmationTokenAsync(applicationUser);
 
                     return Ok(new
                     {
-                        Message = "Instructor registered successfully",
-                        InstructorId = instructor.ID,
-                        CVPath = instructor.CV_PDF_URL,
-                        NationalCardPath = instructor.NationalCardImageURL,
-                        Status = instructor.Status.ToString()
+                        message = "Instructor registered successfully. Please check your email to confirm your registration.",
+                        token = token,
+                        userinfo = new
+                        {
+                            Id = applicationUser.Id,
+                            Username = applicationUser.UserName,
+                            Email = applicationUser.Email,
+                            Name = applicationUser.Name,
+                            ProfileImg = applicationUser.ProfileImageURL,
+                            Role = "Instructor",
+                            InstructorId = instructor.ID,
+                            CVPath = instructor.CV_PDF_URL,
+                            NationalCardPath = instructor.NationalCardImageURL,
+                            Status = instructor.Status.ToString()
+                        }
                     });
                 }
 

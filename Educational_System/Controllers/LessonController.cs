@@ -5,6 +5,7 @@ using EducationalSystem.BLL.Repositories.Interfaces;
 using EducationalSystem.DAL.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EducationalSystem.Controllers
@@ -19,13 +20,16 @@ namespace EducationalSystem.Controllers
         private readonly IGenericRepository<Lesson_Prerequisites> _genericlessonPrerequisites;
         private readonly IGenericRepository<Lesson_Completions> _genericlessonCompletions;
         private readonly ILessonRepository _lessonRepository;
+        private readonly IProgressRepository _progressRepository;
 
         public LessonController(IGenericRepository<Lessons> genericRepository,
             ILessonRepository lessonRepository,
             IGenericRepository<Courses> genericRepositoryCourse,
             IGenericRepository<SubLessons> genericRepositorySubLesson,
             IGenericRepository<Lesson_Prerequisites> lessonPrerequisites,
-            IGenericRepository<Lesson_Completions> genericlessonCompletions)
+            IGenericRepository<Lesson_Completions> genericlessonCompletions,
+            IProgressRepository progressRepository
+            )
         {
             _genericRepositoryLesson = genericRepository;
             _lessonRepository = lessonRepository;
@@ -33,6 +37,7 @@ namespace EducationalSystem.Controllers
             _genericRepositorySubLesson = genericRepositorySubLesson;
             _genericlessonPrerequisites = lessonPrerequisites;
             _genericlessonCompletions = genericlessonCompletions;
+            _progressRepository = progressRepository;
         }
         // 1. Add Lesson to Sublesson ()
         // Roles Allowed: Instructor, Admin <--
@@ -302,20 +307,19 @@ namespace EducationalSystem.Controllers
 
         // 8. Mark Lesson as Completed
         [HttpPost("lessons/{lessonId}/complete")]
-        public async Task<IActionResult> LessonCompleted(/*string userId, */int lessonId)
+        public async Task<IActionResult> LessonCompleted(int lessonId)
         {
-            var userId = HttpContext.Request.Cookies["UserID"];
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized("User not authonticated.");
-            }
+                return Unauthorized("User not authenticated.");
+
             var existingCompletion = await _lessonRepository.existingCompletion(userId, lessonId);
             // get Completed lessons for student from the DB
             if (existingCompletion != null)
             {
                 return Conflict("Lesson already marked as completed.");
             }
-            var lesson = _lessonRepository.GetByIdAsync(lessonId);
+            var lesson = await _lessonRepository.GetByIdAsync(lessonId);
             if (lesson == null)
             {
                 return Conflict("No lessons found.");
@@ -326,8 +330,9 @@ namespace EducationalSystem.Controllers
                 LessonID = lessonId,
                 CompletionDate = DateTime.UtcNow,
             };
-
            await _genericlessonCompletions.AddAsync(lessonCompletion);
+            // add in the progress table
+            var progress = await _progressRepository.UpdateProgressAsync(userId, lessonId);
 
             return CreatedAtAction(
                nameof(GetById),

@@ -21,6 +21,7 @@ namespace EducationalSystem.Controllers
         private readonly IGenericRepository<Lesson_Completions> _genericlessonCompletions;
         private readonly ILessonRepository _lessonRepository;
         private readonly IProgressRepository _progressRepository;
+        private readonly IWebHostEnvironment _environment;
 
         public LessonController(IGenericRepository<Lessons> genericRepository,
             ILessonRepository lessonRepository,
@@ -28,6 +29,7 @@ namespace EducationalSystem.Controllers
             IGenericRepository<SubLessons> genericRepositorySubLesson,
             IGenericRepository<Lesson_Prerequisites> lessonPrerequisites,
             IGenericRepository<Lesson_Completions> genericlessonCompletions,
+            IWebHostEnvironment environment,
             IProgressRepository progressRepository
             )
         {
@@ -37,50 +39,71 @@ namespace EducationalSystem.Controllers
             _genericRepositorySubLesson = genericRepositorySubLesson;
             _genericlessonPrerequisites = lessonPrerequisites;
             _genericlessonCompletions = genericlessonCompletions;
+            _environment = environment;
             _progressRepository = progressRepository;
         }
         // 1. Add Lesson to Sublesson ()
         // Roles Allowed: Instructor, Admin <--
         [HttpPost("sublessons/{subLessonId}/lessons")]
-        public async Task<IActionResult> Add(int subLessonId, [FromBody] LessonDTO lessonFromRequest)
+        public async Task<IActionResult> AddLesson(int subLessonId, [FromForm] postLessonDto lessonDto)
         {
-            if (lessonFromRequest == null)
-            {
-                return BadRequest("lesson data in required");
-            }
+            if (lessonDto == null)
+                return BadRequest("Lesson data is required");
+
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
+
             var subLesson = await _genericRepositorySubLesson.GetByIdAsync(subLessonId);
             if (subLesson == null)
-            {
                 return NotFound($"SubLesson with id {subLessonId} not found");
-            }
+
             try
             {
                 var lesson = new Lessons()
                 {
-                    LessonTitle = lessonFromRequest.LessonTitle,
-                    LessonDescription = lessonFromRequest.LessonDescription,
-                    Content = lessonFromRequest.Content,
-                    LessonOrder = lessonFromRequest.lessonOrder,
-                    CreatedDate = DateTime.UtcNow, // created time--> UtcNow-> if application is distributed across different time zones
-                    CourseID = subLesson.CourseID, // just for test
-                    SubLessonID = subLessonId, // just for test 
+                    LessonTitle = lessonDto.LessonTitle,
+                    LessonDescription = lessonDto.LessonDescription,
+                    Content = lessonDto.Content,
+                    LessonOrder = lessonDto.LessonOrder,
+                    CreatedDate = DateTime.UtcNow,
+                    CourseID = subLesson.CourseID,
+                    SubLessonID = subLessonId
                 };
+
+                // رفع الفيديو لو موجود
+                if (lessonDto.Video is { Length: > 0 })
+                {
+                    var uploads = Path.Combine(_environment.WebRootPath, "uploads/videos");
+                    Directory.CreateDirectory(uploads);
+
+                    var fileName = $"{Guid.NewGuid()}{Path.GetExtension(lessonDto.Video.FileName)}";
+                    var filePath = Path.Combine(uploads, fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                        await lessonDto.Video.CopyToAsync(stream);
+
+                    // هنا هتخزن الرابط
+                    lesson.VideoUrl = $"/uploads/videos/{fileName}";
+                }
+                else
+                {
+                    // لو مفيش فيديو اترفع
+                    lesson.VideoUrl = null;
+                }
+
                 await _lessonRepository.AddAsync(lesson);
+
                 return CreatedAtAction(
-                nameof(GetById),
-                new { id = lesson.ID },
-                lessonFromRequest
+                    nameof(GetById),
+                    new { id = lesson.ID },
+                    lesson
                 );
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, $"internal server error ");
+                return StatusCode(500, "Internal server error");
             }
-        } // DTO For lesson to make the end user cannot see the structure of the lesson Table
+        }
 
         // 2. Get All Lessons by Sublesson 
         [HttpGet("sublessons/{subLessonId}/lessons")]

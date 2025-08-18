@@ -21,7 +21,6 @@ namespace EducationalSystem.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class CourseController : ControllerBase
     {
         private readonly ICourseRepository _courseRepository;
@@ -52,7 +51,7 @@ namespace EducationalSystem.Controllers
             _enrollRepository = enrollRepository;
         }
 
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -285,7 +284,6 @@ namespace EducationalSystem.Controllers
         }
 
         // enroll course by user id 
-        [Authorize]
         [HttpPost("enroll/{id}")]
         public async Task<IActionResult> EnrollInCourse(int id)
         {
@@ -306,6 +304,22 @@ namespace EducationalSystem.Controllers
                 return BadRequest("User is already enrolled in this course.");
 
             return Ok("Successfully enrolled in the course.");
+        }
+
+        // get the user enrolled courses
+        [Authorize]
+        [HttpGet("user/enrolled")]
+        public async Task<IActionResult> GetUserEnrolledCourses()
+        {
+            // Assuming you have a way to get the current user's ID
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User not authenticated.");
+            var enrolledCourses = await _enrollRepository.GetUserEnrolledCoursesAsync(userId);
+            if (enrolledCourses == null || !enrolledCourses.Any())
+                return NotFound("No enrolled courses found for this user.");
+            var enrolledCoursesInfo = _mapper.Map<List<getCourseDto>>(enrolledCourses);
+            return Ok(enrolledCoursesInfo);
         }
     }
 }

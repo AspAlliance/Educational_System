@@ -8,6 +8,8 @@
         public int LessonOrder { get; set; }
         public string LessonDescription { get; set; }
         public int SubLessonID { get; set; }
+        public string? VideoUrl { get; set; } // URL for the lesson video
+        public int? Duration { get; set; } // Duration of the lesson, e.g., "1 hour 30 minutes"
         public List<getLessonPrerequisiteDto> Prerequisites { get; set; }
     }
 }
